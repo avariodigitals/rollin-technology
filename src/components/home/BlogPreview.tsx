@@ -21,14 +21,7 @@ function estimateReadTime(excerptHtml?: string): string {
   return `${Math.max(1, Math.round(words / 40))} min`
 }
 
-/**
- * FIX — replaces the literal "Blog Post Placeholder" x3 dummy stub with
- * the 3 most recent real posts, matching Figma's "Latest Insights"
- * section exactly (category · read time, title, "Visit blog" link to
- * /blog). Each card links to /blog/[slug] (the Blog Detail page built in
- * an earlier round). Reuses the same <BlogCard> component the /blog
- * listing page already uses, for consistency.
- */
+
 export default async function BlogPreview() {
   const data = await fetchGraphQL(GET_BLOG_POSTS, { first: 3, after: null }).catch(() => null)
   const posts: RawPost[] = data?.posts?.nodes ?? []
@@ -56,8 +49,7 @@ export default async function BlogPreview() {
               key={post.id}
               slug={post.slug}
               title={post.title}
-              category={post.categories?.nodes?.[0]?.name ?? "Rollin"}
-              readTime={estimateReadTime(post.excerpt)}
+              
               image={post.featuredImage?.node?.sourceUrl}
             />
           ))}

@@ -8,10 +8,18 @@ interface BlogCardProps {
   excerpt?: string
   date?: string
   image?: string
+  category?: string
+  readTime?: string
 }
 
 
-export function BlogCard({ slug, title, excerpt, date, image }: BlogCardProps) {
+export function BlogCard({ slug,
+  title,
+  excerpt,
+  date,
+  image,
+  category,
+  readTime,}: BlogCardProps) {
   const formattedDate = date
     ? new Date(date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
     : null
@@ -27,19 +35,26 @@ export function BlogCard({ slug, title, excerpt, date, image }: BlogCardProps) {
         )}
       </div>
       <div className="p-4">
-        {formattedDate && (
-          <p className="text-[11px] font-semibold tracking-wide text-primary uppercase">{formattedDate}</p>
-        )}
-        <h3 className="mt-1 line-clamp-2 font-heading text-sm font-semibold text-foreground group-hover:text-primary">
-          {title}
-        </h3>
-        {excerpt && (
-          <p
-            className="mt-1 line-clamp-2 text-xs text-muted-foreground"
-            dangerouslySetInnerHTML={{ __html: excerpt }}
-          />
-        )}
-      </div>
+  {(category || readTime) && (
+    <p className="text-[11px] font-semibold tracking-wide text-primary uppercase">
+      {category}
+      {category && readTime ? " • " : ""}
+      {readTime}
+    </p>
+  )}
+
+  {formattedDate && (
+    <p className="text-[11px] font-semibold tracking-wide text-primary uppercase">
+      {formattedDate}
+    </p>
+  )}
+
+  <h3 className="mt-1 line-clamp-2 font-heading text-sm font-semibold text-foreground group-hover:text-primary">
+    {title}
+  </h3>
+
+  ...
+</div>
     </Link>
   )
 }
