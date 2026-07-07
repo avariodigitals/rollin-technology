@@ -1,26 +1,123 @@
+/* TARGET PATH IN REPO: src/app/globals.css
+   REPLACE THE ENTIRE FILE WITH THIS — this is your original file with
+   the border-color fix already merged in correctly (the @layer base
+   block near the bottom), so there's no manual insertion step that can
+   go wrong this time. */
+
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand Colors
+     DECISION: keep #1CA045 (matches current Figma/header build), NOT the
+     #19A857 in the brand PDF. Do not change without explicit sign-off —
+     see PHASE_1_2_CHANGELOG.md item #1. */
+  --rollin-green: #1CA045;
+  --rollin-gold: #F5C400;
+
+  /* Text Colors */
+  --rollin-text: #24303A;
+  --rollin-text-secondary: #697586;
+  --rollin-text-muted: #98A2B3;
+
+  /* Backgrounds */
+  --rollin-bg: #F8FAFC;
+  --rollin-white: #FFFFFF;
+  --rollin-gray: #F1F5F9;
+
+  /* Status Colors — used by OrderStatusBadge (My Orders) */
+  --status-success: #16A34A;
+  --status-success-bg: #F0FDF4;
+  --status-warning: #D97706;
+  --status-warning-bg: #FFFBEB;
+  --status-info: #2563EB;
+  --status-info-bg: #EFF6FF;
+  --status-danger: #DC2626;
+  --status-danger-bg: #FEF2F2;
+
+  /* Component scale — pulled from the technical guide's 8px grid /
+     12px radius / 48px button spec so every new component references
+     the same source of truth instead of hardcoding values. */
+  --radius-card: 12px;
+  --radius-control: 8px;
+  --radius-pill: 9999px;
+  --control-height: 48px;
+  --shadow-card: 0 1px 2px 0 rgb(0 0 0 / 0.04), 0 1px 3px 0 rgb(0 0 0 / 0.06);
+  --shadow-card-hover: 0 4px 12px 0 rgb(0 0 0 / 0.08);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-montserrat);
+
+  --color-background: #F8FAFC;
+  --color-foreground: #24303A;
+
+  --color-card: #FFFFFF;
+  --color-card-foreground: #24303A;
+
+  --color-primary: #1CA045;
+  --color-primary-foreground: #FFFFFF;
+
+  --color-secondary: #F1F5F9;
+  --color-secondary-foreground: #24303A;
+
+  --color-muted: #F1F5F9;
+  --color-muted-foreground: #697586;
+
+  --color-border: #E5E7EB;
+  --color-ring: #1CA045;
+
+  --color-destructive: #DC2626;
+
+  /* Surfaced as a theme token so badges/CTAs can use bg-accent instead of
+     a raw hex, consistent with how --color-primary is exposed. */
+  --color-accent: #F5C400;
+  --color-accent-foreground: #24303A;
+
+  /* Registers animate-accordion-down / animate-accordion-up utilities
+     (Tailwind v4 CSS-based theme, no config file needed) for the
+     Accordion primitive's open/close transition. */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
 }
+
+/* FIX — Tailwind v4's bare `border` utility defaults to `currentColor`
+   (near-black text) unless a default border color is explicitly set.
+   This restores the sane gray default (matching --color-border) across
+   the whole site in one place. */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border);
+  }
+}
+
+/*
+  Breakpoint reference (Tailwind defaults — documented here because Figma
+  is desktop-only and every responsive decision below md/lg is derived,
+  not designed):
+    sm   640px   large phones, landscape
+    md   768px   tablets (derived)
+    lg  1024px   desktop nav breakpoint — matches Navbar's existing
+                 `hidden lg:block` / `lg:hidden` split, kept unchanged
+    xl  1280px
+*/
