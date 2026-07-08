@@ -38,17 +38,7 @@ export const GET_FEATURED_PRODUCTS = `
   }
 }
 `;
-/**
- * SCHEMA VERIFICATION STATUS for this query:
- * Verified (per earlier Postman checks): databaseId, name, slug, image,
- * price, regularPrice, salePrice, onSale, featured, productCategories,
- * productTags.
- * NOT YET VERIFIED — standard WPGraphQL WooCommerce field names, used here
- * as best guesses, not confirmed against this project's live schema:
- * description, shortDescription, stockStatus, averageRating, reviewCount,
- * galleryImages, attributes. Recommend a Postman pass on this query before
- * treating Product Detail as final — see PRODUCT_DETAIL_NOTES.md.
- */
+
 export const GET_PRODUCT_BY_SLUG = `
 query GetProductBySlug($slug: ID!) {
   product(id: $slug, idType: SLUG) {
@@ -151,26 +141,27 @@ mutation RegisterCustomer($email: String!, $password: String!, $firstName: Strin
 }
 `;
  
-/**
- * Confirmed working — Backend Verification Report TEST 6/7. Requires an
- * Authorization: Bearer <authToken> header (pass authToken as the third
- * arg to fetchGraphQL).
- */
-export const GET_CURRENT_CUSTOMER = `
+
+export const GET_CUSTOMER_STATS = `
 {
   customer {
     id
-    email
-    firstName
-    lastName
     orderCount
     totalSpent
+  }
+}
+`;
+ export const GET_CUSTOMER_ADDRESSES = `
+{
+  customer {
+    id
     billing { address1 city state phone }
     shipping { address1 city state phone }
   }
 }
 `;
- 
+
+
 export const GET_CUSTOMER_ORDERS = `
 {
   customer {

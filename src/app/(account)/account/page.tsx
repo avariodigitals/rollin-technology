@@ -9,7 +9,7 @@ import { DashboardStat } from "@/components/account/DashboardStat"
 import { OrderStatusBadge, type OrderStatus } from "@/components/shared/StatusBadge"
 import { formatNaira } from "@/lib/currency"
 import { fetchGraphQL } from "@/lib/graphql"
-import { GET_CURRENT_CUSTOMER, GET_CUSTOMER_ORDERS } from "@/lib/queries"
+import { GET_CUSTOMER_STATS, GET_CUSTOMER_ORDERS } from "@/lib/queries"
 import { useAuthStore } from "@/lib/store/authStore"
 import { useWishlistStore } from "@/lib/store/wishlistStore"
 
@@ -29,8 +29,6 @@ interface RawOrderNode {
   lineItems?: { nodes: unknown[] }
 }
 
-// WooCommerce order statuses are typically lowercase (processing/completed/
-// cancelled/on-hold). NOT yet Postman-verified against a real order.
 function mapOrderStatus(raw: string): OrderStatus {
   const normalized = raw.toLowerCase()
   if (normalized.includes("cancel")) return "cancelled"
@@ -40,15 +38,10 @@ function mapOrderStatus(raw: string): OrderStatus {
 }
 
 /**
- * NO MOCK DATA — every value on this page comes from a real query.
- * - Total Orders / Total Spent: GET_CURRENT_CUSTOMER
- * - Recent Orders: GET_CUSTOMER_ORDERS (first 5 shown)
- * - Wishlist Items: real count from the local wishlistStore (this one is
- *   genuinely client-side by design, not a gap — there's no backend
- *   wishlist concept)
- * - Saved Addresses: shows "—" honestly, since the Addresses page is
- *   still local-only mock data with no real count to pull from yet —
- *   faking a number here would be worse than an honest placeholder.
+ * FIX — was calling GET_CURRENT_CUSTOMER (which includes billing/
+ * shipping/firstName/lastName, none of which this page actually uses)
+ * and crashing on the untested field. Switched to GET_CUSTOMER_STATS —
+ * only id/orderCount/totalSpent, which is all this page ever needed.
  */
 export default function AccountDashboardPage() {
   const authToken = useAuthStore((s) => s.authToken)
@@ -62,13 +55,13 @@ export default function AccountDashboardPage() {
     if (!authToken) return
 
     async function load() {
-      const [customerData, ordersData] = await Promise.all([
-        fetchGraphQL(GET_CURRENT_CUSTOMER, {}, authToken),
+      const [statsData, ordersData] = await Promise.all([
+        fetchGraphQL(GET_CUSTOMER_STATS, {}, authToken),
         fetchGraphQL(GET_CUSTOMER_ORDERS, {}, authToken),
       ])
 
-      setOrderCount(customerData?.customer?.orderCount ?? 0)
-      setTotalSpent(formatNaira(Number(customerData?.customer?.totalSpent) || 0))
+      setOrderCount(statsData?.customer?.orderCount ?? 0)
+      setTotalSpent(formatNaira(Number(statsData?.customer?.totalSpent) || 0))
 
       const orders: OrderSummary[] = ((ordersData?.customer?.orders?.nodes ?? []) as RawOrderNode[])
         .slice(0, 5)

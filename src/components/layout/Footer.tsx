@@ -18,24 +18,25 @@ interface FooterLink {
 
 
 const staticColumns: { title: string; links: FooterLink[] }[] = [
-  {
-    title: "Company",
-    links: [
-      { label: "About Us", href: "/about" },
-      { label: "Blog", href: "/blog" },
-      { label: "Careers", placeholder: true },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
-  {
-    title: "Business",
-    links: [
-      { label: "Corporate Accounts", placeholder: true },
-      { label: "Government Procurement", placeholder: true },
-      { label: "School Procurement", placeholder: true },
-      { label: "Request a Quote", placeholder: true },
-    ],
-  },
+{
+  title: "Company",
+  links: [
+    { label: "About Us", href: "/about" },
+    { label: "Blog", href: "/blog" },
+    { label: "Careers", href: "/careers" },
+    { label: "Contact", href: "/contact" },
+  ],
+},
+ 
+{
+  title: "Business",
+  links: [
+    { label: "Corporate Accounts", href: "/procurement/corporate" },
+    { label: "Government Procurement", href: "/procurement/government" },
+    { label: "School Procurement", href: "/procurement/schools" },
+    { label: "Request a Quote", href: "/procurement" },
+  ],
+},
   {
     title: "Support",
     links: [
@@ -66,8 +67,7 @@ async function getPopulatedCategoryLinks(): Promise<FooterLink[]> {
       .slice(0, 4)
       .map((category) => ({ label: category.name, href: `/category/${category.slug}` }))
   } catch {
-    // Fails open to an empty list rather than crashing the footer if the
-    // GraphQL endpoint is unreachable at build/request time.
+  
     return []
   }
 }
@@ -89,7 +89,7 @@ export default async function Footer() {
             </p>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
               <li className="flex items-center gap-2">
-                <Phone className="size-3.5" /> +234 800 000 0000
+                <Phone className="size-3.5" /> +234 814 846 4823
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="size-3.5" /> hello@rollin.ng

@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/app/register/page.tsx (replaces the existing file)
+// TARGET PATH IN REPO: src/app/register/page.tsx — REPLACE THE ENTIRE FILE
 "use client"
 
 import { useState } from "react"
@@ -10,31 +10,22 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { fetchGraphQL } from "@/lib/graphql"
-import { REGISTER_CUSTOMER_MUTATION, LOGIN_MUTATION } from "@/lib/queries"
-import { useAuthStore } from "@/lib/store/authStore"
+import { REGISTER_CUSTOMER_MUTATION } from "@/lib/queries"
 
 /**
- * REAL AUTH — confirmed against Backend Verification Report TEST 3.
- * registerCustomer creates the WooCommerce customer but does not
- * reliably issue a token ("Only the user requesting a token can get a
- * token issued for them"). Workaround, not a WordPress setting change:
- * register, then immediately log in with the same credentials to get a
- * real session. This sidesteps the "Anyone can register" WP setting
- * entirely, since that setting only gates `registerUser`, not
- * `registerCustomer` (confirmed in the same report).
- *
- * Phone number is collected in the form (matches Figma) but isn't sent
- * to registerCustomer — the mutation's confirmed working shape only
- * accepted email/password/firstName/lastName. Saving phone to the
- * customer's billing/shipping profile needs a separate updateCustomer
- * call after login succeeds; not wired here yet.
+ * CHANGED — previously chained an automatic login right after
+ * registerCustomer succeeded, sending the user straight to /account.
+ * Per direct feedback, that skipped an expected "log in after creating
+ * your account" step. Now shows a success message and redirects to
+ * /sign-in instead — the user logs in explicitly with the credentials
+ * they just created.
  */
 export default function RegisterPage() {
   const router = useRouter()
-  const setSession = useAuthStore((s) => s.setSession)
   const [showPassword, setShowPassword] = useState(false)
   const [agreed, setAgreed] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({
     firstName: "",
@@ -66,32 +57,26 @@ export default function RegisterPage() {
       lastName: form.lastName,
     })
 
+    setLoading(false)
+
     if (!registerData?.registerCustomer?.customer) {
       setError("Could not create an account with that email. It may already be in use.")
-      setLoading(false)
       return
     }
 
-    // registerCustomer doesn't reliably return a token — log in right away
-    // with the same credentials instead of trusting its own token fields.
-    const loginData = await fetchGraphQL(LOGIN_MUTATION, {
-      username: form.email,
-      password: form.password,
-    })
+    setSuccess(true)
+    setTimeout(() => router.push("/sign-in"), 1800)
+  }
 
-    if (!loginData?.login?.authToken) {
-      // Account exists even though auto-login failed — send them to sign
-      // in manually rather than leaving them stuck on a broken redirect.
-      router.push("/sign-in")
-      return
-    }
-
-    setSession({
-      authToken: loginData.login.authToken,
-      refreshToken: loginData.login.refreshToken,
-      user: loginData.login.user,
-    })
-    router.push("/account")
+  if (success) {
+    return (
+      <div className="flex min-h-[calc(100vh-64px)] items-center justify-center bg-[#F0FDF4] px-4 py-10">
+        <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-[var(--shadow-card-hover)]">
+          <h1 className="font-heading text-2xl font-bold text-foreground">Account created</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Taking you to sign in...</p>
+        </div>
+      </div>
+    )
   }
 
   return (

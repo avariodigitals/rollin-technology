@@ -17,7 +17,7 @@ export default function MainNav() {
               width={140}
               height={40}
               priority
-              className="h-auto w-auto max-h-[44px]"
+              className="h-11 w-auto object-contain"
             />
           </div>
 
