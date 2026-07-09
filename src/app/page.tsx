@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/app/page.tsx (replaces existing)
+
 import Hero from "@/components/home/Hero";
 import TrustBar from "@/components/home/TrustBar";
 import Categories from "@/components/home/Categories";

@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/lib/graphql.ts — REPLACE THE ENTIRE FILE
+
 import { useAuthStore } from "@/lib/store/authStore";
 
 const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_WORDPRESS_API!;
