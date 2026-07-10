@@ -69,12 +69,13 @@ export function ReviewStep({ onBack, onPlaceOrder }: { onBack: () => void; onPla
       </div>
 
       <div className="flex items-center gap-3">
-        <Button variant="outline" onClick={onBack} className="h-12 rounded-lg">
-          Back
-        </Button>
-        <Button onClick={onPlaceOrder} className="h-12 flex-1 rounded-lg">
-          Place order
-        </Button>
+        <Button type="button" variant="outline" onClick={onBack} className="h-12 rounded-lg">
+  Back
+</Button>
+
+        <Button type="button" onClick={onPlaceOrder} className="h-12 flex-1 rounded-lg">
+  Place order
+</Button>
       </div>
     </div>
   )

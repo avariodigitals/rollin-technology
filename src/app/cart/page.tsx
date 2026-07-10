@@ -1,6 +1,7 @@
+// TARGET PATH IN REPO: src/app/cart/page.tsx (replaces existing)
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 
 import Container from "@/components/shared/Container"
@@ -11,9 +12,12 @@ import { EmptyState } from "@/components/shared/EmptyState"
 import { useCartStore } from "@/lib/store/cartStore"
 import { formatNaira, parseNairaAmount } from "@/lib/currency"
 
+const WHATSAPP_NUMBER = "2348148464823"
+
 export default function CartPage() {
   const router = useRouter()
   const { lines, updateQuantity, removeItem } = useCartStore()
+  const [orderRef] = useState(() => `ORD-${Math.random().toString(36).slice(2, 8).toUpperCase()}`)
 
   const subtotal = useMemo(
     () =>
@@ -23,6 +27,27 @@ export default function CartPage() {
       }, 0),
     [lines]
   )
+
+  /**
+   * FIX — "Send cart via WhatsApp" previously had no onClick at all.
+   * Builds a message covering exactly what the brief specifies: Product
+   * Name, Quantity, Price (per line), plus an Order Reference. Customer
+   * Details aren't included yet since there's no name/phone captured
+   * before this point in the flow — Checkout's Shipping step is where
+   * that's collected; this is the pre-checkout "quick order" path.
+   */
+  const handleSendToWhatsApp = () => {
+    const lineText = lines
+      .map((line) => {
+        const unitPrice = parseNairaAmount((line.product.onSale && line.product.salePrice) || line.product.price)
+        return `• ${line.product.name} — Qty: ${line.quantity} — ${formatNaira(unitPrice * line.quantity)}`
+      })
+      .join("\n")
+
+    const message = `Hi, I'd like to place an order:\n\n${lineText}\n\nSubtotal: ${formatNaira(subtotal)}\nOrder Reference: ${orderRef}`
+
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank")
+  }
 
   if (lines.length === 0) {
     return (
@@ -47,7 +72,7 @@ export default function CartPage() {
 
       <h1 className="font-heading text-2xl font-bold text-foreground">Your cart</h1>
       <p className="mt-1 mb-6 text-sm text-muted-foreground">
-        {lines.length} {lines.length === 1 ? "item" : "items"}
+        {lines.length} {lines.length === 1 ? "item" : "items"} · Order Ref {orderRef}
       </p>
 
       <div className="grid gap-8 pb-16 lg:grid-cols-[1fr_360px]">
@@ -71,7 +96,7 @@ export default function CartPage() {
           total={formatNaira(subtotal)}
           ctaLabel="Checkout"
           onCtaClick={() => router.push("/checkout")}
-          secondaryAction={{ label: "Send cart via WhatsApp" }}
+          secondaryAction={{ label: "Send cart via WhatsApp", onClick: handleSendToWhatsApp }}
         />
       </div>
     </Container>

@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/app/shop/page.tsx (replaces existing — adds search support)
+// TARGET PATH IN REPO: src/app/shop/page.tsx (replaces existing)
 import Container from "@/components/shared/Container"
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs"
 import { ProductFilterSidebar } from "@/components/commerce/ProductFilterSidebar"
@@ -29,7 +29,13 @@ function toArray(value?: string | string[]): string[] {
   return Array.isArray(value) ? value : [value]
 }
 
-
+/**
+ * FIX — now that `productBrandIn` is confirmed as the real server-side
+ * filter argument (per your test), this filters brand on the actual full
+ * catalog server-side. The old "fetch 100 then filter client-side"
+ * workaround is gone entirely — it was only ever a stopgap for an
+ * unconfirmed argument name.
+ */
 export default async function ShopPage({ searchParams }: ShopPageProps) {
   const params = await searchParams
   const selectedCategories = toArray(params.category)
@@ -44,6 +50,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       first: PRODUCTS_PER_PAGE,
       after: params.after ?? null,
       categoryIn: selectedCategories.length > 0 ? selectedCategories : null,
+      productBrandIn: selectedBrands.length > 0 ? selectedBrands : null,
       minPrice: priceBracket?.min ?? null,
       maxPrice: priceBracket?.max ?? null,
       stockStatus: inStockOnly ? ["IN_STOCK"] : null,
@@ -55,13 +62,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     (c) => (c.count ?? 0) > 0
   )
   const brands = brandsData?.productBrands?.nodes ?? []
-
-  let products: Product[] = (productsData?.products?.nodes ?? []).map(mapProduct)
-
-  if (selectedBrands.length > 0) {
-    products = products.filter((p: Product) => p.brand && selectedBrands.includes(p.brand))
-  }
-
+  const products: Product[] = (productsData?.products?.nodes ?? []).map(mapProduct)
   const pageInfo = productsData?.products?.pageInfo
 
   return (
@@ -117,14 +118,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 }
 
 function buildNextPageQuery(
-  params: {
-    category?: string | string[]
-    brand?: string | string[]
-    price?: string
-    inStock?: string
-    sort?: string
-    search?: string
-  },
+  params: { category?: string | string[]; brand?: string | string[]; price?: string; inStock?: string; sort?: string; search?: string },
   after: string
 ) {
   const usp = new URLSearchParams()

@@ -52,7 +52,7 @@ export default async function Categories() {
     Shop by Category
   </p>
   <h2 className="mt-2 text-3xl font-bold">
-    What are you building today?
+    What are you buying today?
   </h2>
 </div>
  

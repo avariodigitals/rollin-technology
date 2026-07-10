@@ -1,20 +1,11 @@
+// TARGET PATH IN REPO: src/app/about/page.tsx — REPLACE THE ENTIRE FILE
+import Link from "next/link"
 import { ShieldCheck, Users, Award, Truck, Building2, Wrench, Headphones, PackageCheck } from "lucide-react"
 
 import Container from "@/components/shared/Container"
 import { StatBlock } from "@/components/marketing/StatBlock"
 import { PrincipleCard } from "@/components/marketing/PrincipleCard"
-import { PlaceholderLink } from "@/components/shared/PlaceholderLink"
 
-/**
- * CONTENT FIDELITY FLAG: the About Us Figma frame was supplied as a small
- * thumbnail screenshot — exact stat labels, principle-card copy, and the
- * "Authorised. Accountable. Audited." badge text are reconstructed from
- * what's legibly visible, not a pixel-accurate transcription. Recommend
- * verifying this page against the actual Figma file at full resolution
- * before treating the copy as final. No specific registration numbers or
- * certifications were invented — those badges use generic placeholder
- * labels pending real credentials from Rollin.
- */
 export default function AboutPage() {
   return (
     <div>
@@ -132,18 +123,20 @@ export default function AboutPage() {
           </p>
           <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <a
-              href="https://wa.me/2340000000000"
+              href="https://wa.me/2348148464823"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-lg bg-white px-6 py-3 text-sm font-semibold text-primary transition hover:bg-white/90"
             >
               Chat on WhatsApp
             </a>
-            {/* /bulk-procurement isn't an approved route yet — PlaceholderLink instead of a dead link */}
-            <PlaceholderLink
-              label="Request a quote"
-              className="rounded-lg border border-white/40 px-6 py-3 text-sm font-semibold text-white"
-            />
+            {/* FIX — was a disabled PlaceholderLink; /procurement has existed for many rounds now */}
+            <Link
+              href="/procurement"
+              className="rounded-lg border border-white/40 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              Request a quote
+            </Link>
           </div>
         </Container>
       </section>

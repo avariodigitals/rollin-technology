@@ -185,15 +185,6 @@ export const GET_CUSTOMER_ORDERS = `
 }
 `;
 
-
-
-
-
-
-
-
-
-
 export const GET_BLOG_POSTS = `
 query GetBlogPosts($first: Int!, $after: String) {
   posts(first: $first, after: $after) {
@@ -251,6 +242,7 @@ query GetShopProducts(
   $first: Int!
   $after: String
   $categoryIn: [String]
+  $productBrandIn: [String]
   $minPrice: Float
   $maxPrice: Float
   $stockStatus: [StockStatusEnum]
@@ -260,11 +252,12 @@ query GetShopProducts(
     first: $first
     after: $after
     where: {
-      categoryIn: $categoryIn
-      minPrice: $minPrice
-      maxPrice: $maxPrice
-      stockStatus: $stockStatus
-      search: $search
+     categoryIn: $categoryIn
+  productBrandIn: $productBrandIn
+  minPrice: $minPrice
+  maxPrice: $maxPrice
+  stockStatus: $stockStatus
+  search: $search
     }
   ) {
     pageInfo {

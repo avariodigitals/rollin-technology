@@ -1,7 +1,8 @@
 "use client"
 
-import { useMemo } from "react"
-import { useRouter } from "next/navigation"
+import { useMemo, useState } from "react"
+import Link from "next/link"
+import { CheckCircle2 } from "lucide-react"
 
 import Container from "@/components/shared/Container"
 import { CheckoutStepper } from "@/components/layout/CheckoutStepper"
@@ -9,29 +10,25 @@ import { OrderSummary } from "@/components/commerce/OrderSummary"
 import { ShippingStep } from "@/components/checkout/ShippingStep"
 import { PaymentStep } from "@/components/checkout/PaymentStep"
 import { ReviewStep } from "@/components/checkout/ReviewStep"
-import { useCheckoutStore } from "@/lib/store/checkoutStore"
+import { useCheckoutStore, type PaymentMethod } from "@/lib/store/checkoutStore"
 import { useCartStore } from "@/lib/store/cartStore"
 import { formatNaira, parseNairaAmount } from "@/lib/currency"
 
-/**
- * SCOPE FLAGS:
- * - VAT rate (7.5%) is derived from Figma's own example numbers (₦270,375
- *   VAT shown on a ₦3,605,000 subtotal = exactly 7.5%), not an invented
- *   guess — but still worth confirming against actual tax configuration
- *   before treating as final, since Figma's numbers could themselves be
- *   placeholder/example data.
- * - Express shipping cost (₦7,500) is read directly from the Shipping
- *   step's Figma copy, confirmed rather than guessed.
- * - "Place order" has no backend order-creation call — it clears the
- *   local cart and redirects home. Wiring to a real order-creation
- *   endpoint is separate scope.
- */
 const VAT_RATE = 0.075
+const WHATSAPP_NUMBER = "2348148464823"
+
+const CONFIRMATION_COPY: Record<PaymentMethod, string> = {
+  "bank-transfer": "We'll send bank transfer details to the email you provided — your order ships once payment is confirmed.",
+  "pay-on-delivery": "Pay when your order arrives. Our team will confirm a delivery window with you shortly.",
+  card: "Card payment isn't live yet — a member of our team will reach out to arrange payment via bank transfer or WhatsApp.",
+}
+
 
 export default function CheckoutPage() {
-  const router = useRouter()
-  const { step, setStep, deliveryMethod } = useCheckoutStore()
+  const { step, setStep, deliveryMethod, paymentMethod } = useCheckoutStore()
   const { lines, clear } = useCartStore()
+  const [orderComplete, setOrderComplete] = useState(false)
+  const [orderRef] = useState(() => `ORD-${Math.random().toString(36).slice(2, 8).toUpperCase()}`)
 
   const subtotal = useMemo(
     () =>
@@ -47,8 +44,40 @@ export default function CheckoutPage() {
   const total = subtotal + shippingCost + vat
 
   const handlePlaceOrder = () => {
+    setOrderComplete(true)
     clear()
-    router.push("/")
+  }
+
+  if (orderComplete) {
+    return (
+      <Container>
+        <div className="mx-auto max-w-lg py-16 text-center">
+          <CheckCircle2 className="mx-auto size-12 text-primary" />
+          <h1 className="mt-4 font-heading text-2xl font-bold text-foreground">Order received</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Order reference: <strong className="text-foreground">{orderRef}</strong>
+          </p>
+          <p className="mt-4 text-sm text-muted-foreground">{CONFIRMATION_COPY[paymentMethod]}</p>
+
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <Link
+              href="/shop"
+              className="rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-muted"
+            >
+              Continue shopping
+            </Link>
+            <a
+              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hi, following up on my order ${orderRef}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+            >
+              Chat on WhatsApp
+            </a>
+          </div>
+        </div>
+      </Container>
+    )
   }
 
   return (

@@ -9,19 +9,7 @@ interface CategoryCardProps {
   image?: string | null
 }
 
-/**
- * DEVIATION FLAG: original was a bare Card with just a name. Figma's "What
- * are you building today?" section shows a photo, product count, and a
- * hover arrow per category.
- *
- * Verified via Postman: the schema supports `image { sourceUrl }` on
- * ProductCategory, but live data currently returns `image: null` (no
- * WooCommerce category thumbnails uploaded yet). This component already
- * handles that — `image` is optional and falls back to a plain gray block
- * rather than broken `<Image>` markup or invented placeholder art. No code
- * change needed here; this will "just work" once thumbnails are uploaded
- * on the backend.
- */
+
 export default function CategoryCard({ name, slug, count, image }: CategoryCardProps) {
   return (
     <Link
