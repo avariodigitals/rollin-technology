@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/components/marketing/CorporateForm.tsx (new file)
+
 "use client"
 
 import { useState } from "react"

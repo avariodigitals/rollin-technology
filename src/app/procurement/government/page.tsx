@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/app/procurement/government/page.tsx (new)
+
 import { Landmark, FileCheck, Scale, Clock } from "lucide-react"
 
 import Container from "@/components/shared/Container"

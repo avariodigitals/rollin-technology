@@ -1,16 +1,9 @@
-/* TARGET PATH IN REPO: src/app/globals.css
-   REPLACE THE ENTIRE FILE WITH THIS — this is your original file with
-   the border-color fix already merged in correctly (the @layer base
-   block near the bottom), so there's no manual insertion step that can
-   go wrong this time. */
+
 
 @import "tailwindcss";
 
 :root {
-  /* Brand Colors
-     DECISION: keep #1CA045 (matches current Figma/header build), NOT the
-     #19A857 in the brand PDF. Do not change without explicit sign-off —
-     see PHASE_1_2_CHANGELOG.md item #1. */
+  
   --rollin-green: #1CA045;
   --rollin-gold: #F5C400;
 
@@ -99,10 +92,7 @@
   }
 }
 
-/* FIX — Tailwind v4's bare `border` utility defaults to `currentColor`
-   (near-black text) unless a default border color is explicitly set.
-   This restores the sane gray default (matching --color-border) across
-   the whole site in one place. */
+
 @layer base {
   *,
   ::before,
@@ -111,13 +101,3 @@
   }
 }
 
-/*
-  Breakpoint reference (Tailwind defaults — documented here because Figma
-  is desktop-only and every responsive decision below md/lg is derived,
-  not designed):
-    sm   640px   large phones, landscape
-    md   768px   tablets (derived)
-    lg  1024px   desktop nav breakpoint — matches Navbar's existing
-                 `hidden lg:block` / `lg:hidden` split, kept unchanged
-    xl  1280px
-*/

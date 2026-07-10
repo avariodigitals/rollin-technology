@@ -10,7 +10,7 @@ interface OrderSummaryLine {
 interface OrderSummaryProps {
   lines: OrderSummaryLine[]
   total: string
-  /** Optional — Cart's sidebar has its own CTA, but Checkout's sidebar (all 3 steps) shows totals only in Figma; each step's primary action lives in the main content instead. */
+  
   ctaLabel?: string
   onCtaClick?: () => void
   secondaryAction?: {

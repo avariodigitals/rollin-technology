@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/app/(account)/account/orders/page.tsx (replaces the mock version)
+
 "use client"
 
 import { useEffect, useMemo, useState } from "react"

@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/components/layout/Navbar.tsx (replaces existing)
+
 import UtilityBar from "./UtilityBar";
 import MainNav from "./MainNav";
 import SearchBar from "./SearchBar";

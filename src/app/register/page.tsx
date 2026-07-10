@@ -12,14 +12,7 @@ import { Button } from "@/components/ui/button"
 import { fetchGraphQL } from "@/lib/graphql"
 import { REGISTER_CUSTOMER_MUTATION } from "@/lib/queries"
 
-/**
- * CHANGED — previously chained an automatic login right after
- * registerCustomer succeeded, sending the user straight to /account.
- * Per direct feedback, that skipped an expected "log in after creating
- * your account" step. Now shows a success message and redirects to
- * /sign-in instead — the user logs in explicitly with the credentials
- * they just created.
- */
+
 export default function RegisterPage() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)

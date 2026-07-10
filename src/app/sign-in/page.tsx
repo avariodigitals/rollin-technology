@@ -14,14 +14,7 @@ import { fetchGraphQL } from "@/lib/graphql"
 import { LOGIN_MUTATION } from "@/lib/queries"
 import { useAuthStore } from "@/lib/store/authStore"
 
-/**
- * REAL AUTH — confirmed against Backend Verification Report TEST 1.
- * Replaces the previous "redirects regardless of credentials" placeholder.
- * "Remember me" checkbox is currently a no-op — the session is always
- * persisted via authStore's zustand `persist` middleware regardless of
- * this checkbox, since there's no separate short-lived/session-only mode
- * built yet. Google button stays disabled — no OAuth wired up.
- */
+
 export default function SignInPage() {
   const router = useRouter()
   const setSession = useAuthStore((s) => s.setSession)

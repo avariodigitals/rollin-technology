@@ -36,12 +36,7 @@ const initialShipping: ShippingDetails = {
   notes: "",
 }
 
-/**
- * All state lives here (not per-step component state) since Review needs
- * to read what Shipping/Payment collected, and Figma's "Edit" links jump
- * back to earlier steps without losing what was entered. In-memory only —
- * same persistence caveat as cartStore.ts.
- */
+
 export const useCheckoutStore = create<CheckoutState>((set) => ({
   step: 1,
   shipping: initialShipping,

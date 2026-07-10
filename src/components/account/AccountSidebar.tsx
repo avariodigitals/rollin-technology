@@ -14,9 +14,6 @@ interface AccountSidebarProps {
   onSignOut?: () => void
 }
 
-// Wishlist now points back to /account/wishlist — moved back inside the
-// account area per your preference (it also matches Figma's intent more
-// closely, which shows "My Wishlist" as an account-nested page).
 const navItems = [
   { label: "Dashboard", href: "/account", icon: LayoutDashboard },
   { label: "My Orders", href: "/account/orders", icon: Package },

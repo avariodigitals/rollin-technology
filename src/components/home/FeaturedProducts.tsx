@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/components/home/FeaturedProducts.tsx (replaces existing)
+
 import Link from "next/link";
 
 import { ProductGrid } from "@/components/commerce/ProductGrid";
@@ -7,7 +7,7 @@ import { fetchGraphQL } from "@/lib/graphql";
 import { GET_FEATURED_PRODUCTS } from "@/lib/queries";
 import { mapProduct } from "@/lib/products/mapProduct";
 
-/** FIX — heading changed from "Featured Products" to match Figma's actual copy: eyebrow "Featured", heading "Hand-picked this week". */
+
 export default async function FeaturedProducts() {
   const data = await fetchGraphQL(GET_FEATURED_PRODUCTS);
 

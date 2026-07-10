@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/app/store-locator/page.tsx (new)
+
 import { ComingSoonPage } from "@/components/shared/ComingSoonPage"
 
 export default function StoreLocatorPage() {

@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/components/home/BulkProcurement.tsx (replaces the dummy stub)
+
 import Link from "next/link"
 import { Boxes, Building2, Landmark, GraduationCap, HeartHandshake, UserCheck } from "lucide-react"
 

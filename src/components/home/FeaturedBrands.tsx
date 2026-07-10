@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/components/home/FeaturedBrands.tsx (replaces existing)
+
 import Image from "next/image"
 
 import Container from "@/components/shared/Container"

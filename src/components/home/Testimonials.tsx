@@ -22,7 +22,7 @@ const testimonials = [
   },
 ]
 
-/** FIX — replaces the 3 "Customer Testimonial" placeholder boxes with real copy from Figma. */
+
 export default function Testimonials() {
   return (
     <section className="bg-muted/30 py-16">

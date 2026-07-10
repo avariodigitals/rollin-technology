@@ -8,7 +8,7 @@ interface WishlistState {
   removeItem: (databaseId: number) => void
 }
 
-/** Same in-memory-only scope note as cartStore.ts applies here. */
+
 export const useWishlistStore = create<WishlistState>((set) => ({
   items: [],
   toggleItem: (product) =>

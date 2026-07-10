@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/components/commerce/ProductGrid.tsx (replaces existing)
+
 import ProductCard from "@/components/product/ProductCard"
 import { EmptyState } from "@/components/shared/EmptyState"
 import type { Product } from "@/types/product"

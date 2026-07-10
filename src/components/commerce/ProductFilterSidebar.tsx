@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/components/commerce/ProductFilterSidebar.tsx (new)
+
 import { Button } from "@/components/ui/button"
 import { PRICE_BRACKETS } from "@/lib/priceBrackets"
 

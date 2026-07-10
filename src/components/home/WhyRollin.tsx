@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/components/home/WhyRollin.tsx (new)
+
 import { ShieldCheck, Truck, Wrench, Headphones, CreditCard, Building2 } from "lucide-react"
 
 import Container from "@/components/shared/Container"

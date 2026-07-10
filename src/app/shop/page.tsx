@@ -29,13 +29,7 @@ function toArray(value?: string | string[]): string[] {
   return Array.isArray(value) ? value : [value]
 }
 
-/**
- * FIX — now that `productBrandIn` is confirmed as the real server-side
- * filter argument (per your test), this filters brand on the actual full
- * catalog server-side. The old "fetch 100 then filter client-side"
- * workaround is gone entirely — it was only ever a stopgap for an
- * unconfirmed argument name.
- */
+
 export default async function ShopPage({ searchParams }: ShopPageProps) {
   const params = await searchParams
   const selectedCategories = toArray(params.category)

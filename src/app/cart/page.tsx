@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/app/cart/page.tsx (replaces existing)
+
 "use client"
 
 import { useMemo, useState } from "react"
@@ -28,14 +28,7 @@ export default function CartPage() {
     [lines]
   )
 
-  /**
-   * FIX — "Send cart via WhatsApp" previously had no onClick at all.
-   * Builds a message covering exactly what the brief specifies: Product
-   * Name, Quantity, Price (per line), plus an Order Reference. Customer
-   * Details aren't included yet since there's no name/phone captured
-   * before this point in the flow — Checkout's Shipping step is where
-   * that's collected; this is the pre-checkout "quick order" path.
-   */
+
   const handleSendToWhatsApp = () => {
     const lineText = lines
       .map((line) => {

@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/components/home/BlogPreview.tsx (replaces the "Blog Post Placeholder" stub)
+
 import Link from "next/link"
 
 import Container from "@/components/shared/Container"
@@ -49,7 +49,8 @@ export default async function BlogPreview() {
               key={post.id}
               slug={post.slug}
               title={post.title}
-              
+              category={post.categories?.nodes?.[0]?.name ?? "Rollin"}
+              readTime={estimateReadTime(post.excerpt)}
               image={post.featuredImage?.node?.sourceUrl}
             />
           ))}

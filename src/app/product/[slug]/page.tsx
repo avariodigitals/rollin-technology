@@ -15,16 +15,7 @@ import { mapProductDetail } from "@/lib/products/mapProductDetail"
 import { mapProduct } from "@/lib/products/mapProduct"
 import { Product } from "@/types/product"
 
-/**
- * NEXT.JS VERSION NOTE: package.json shows "next": "16.2.9", and the
- * repo's own AGENTS.md flags this as a non-standard version with breaking
- * changes from what training data would assume — it directs reading
- * node_modules/next/dist/docs/ before writing route code, which I can't
- * access from here (that's your actual repo, not this sandbox). `params`
- * is treated as a Promise below, matching the Next.js 15+ App Router
- * convention — please verify this against your actual `next` docs/types
- * before merging; if 16.2.9 changed this again, this needs a one-line fix.
- */
+
 interface ProductPageProps {
   params: Promise<{ slug: string }>
 }
@@ -39,9 +30,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const product = mapProductDetail(data.product)
 
-  // "You may also like" — reuses the featured products query as a
-  // stand-in until a real related-products relationship (by category,
-  // cross-sell, etc.) is confirmed against the backend. Not final.
+ 
   const relatedData = await fetchGraphQL(GET_FEATURED_PRODUCTS)
   const relatedProducts = (relatedData?.products?.nodes ?? [])
     .map(mapProduct)

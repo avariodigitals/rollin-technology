@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/app/account/profile/page.tsx (new — fixes the 404)
+
 "use client"
 
 import { useState } from "react"

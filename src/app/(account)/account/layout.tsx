@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/app/account/layout.tsx (replaces existing)
+
 "use client"
 
 import { useEffect } from "react"

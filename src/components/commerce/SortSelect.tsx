@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/components/commerce/SortSelect.tsx (new)
+
 "use client"
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation"

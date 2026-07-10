@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/app/about/page.tsx — REPLACE THE ENTIRE FILE
+
 import Link from "next/link"
 import { ShieldCheck, Users, Award, Truck, Building2, Wrench, Headphones, PackageCheck } from "lucide-react"
 
@@ -130,7 +130,7 @@ export default function AboutPage() {
             >
               Chat on WhatsApp
             </a>
-            {/* FIX — was a disabled PlaceholderLink; /procurement has existed for many rounds now */}
+           
             <Link
               href="/procurement"
               className="rounded-lg border border-white/40 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"

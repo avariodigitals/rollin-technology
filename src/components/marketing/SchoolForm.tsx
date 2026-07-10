@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 
-/** Fields tailored to schools: school name, student/staff device count — distinct from the corporate and government forms. */
+
 export function SchoolForm() {
   const [submitted, setSubmitted] = useState(false)
 

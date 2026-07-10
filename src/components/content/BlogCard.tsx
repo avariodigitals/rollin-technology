@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/components/content/BlogCard.tsx (replaces existing file)
+
 import Image from "next/image"
 import Link from "next/link"
 

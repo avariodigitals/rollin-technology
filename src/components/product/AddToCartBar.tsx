@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/components/product/AddToCartBar.tsx (replaces existing)
+
 "use client"
 
 import { useState } from "react"
@@ -48,7 +48,7 @@ export function AddToCartBar({ product, disabled, maxQuantity = 99 }: AddToCartB
 
     
       <a
-        href={`https://wa.me/2340000000000?text=${encodeURIComponent(whatsappMessage)}`}
+        href={`https://wa.me/2348148464823?text=${encodeURIComponent(whatsappMessage)}`}
         target="_blank"
         rel="noopener noreferrer"
         aria-disabled={disabled}

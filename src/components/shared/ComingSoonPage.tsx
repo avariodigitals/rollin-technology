@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/components/shared/ComingSoonPage.tsx (new)
+
 import Container from "@/components/shared/Container"
 
 interface ComingSoonPageProps {

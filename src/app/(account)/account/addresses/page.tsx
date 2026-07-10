@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/app/(account)/account/addresses/page.tsx — REPLACE
+
 "use client"
 
 import { useEffect, useState } from "react"
@@ -16,7 +16,7 @@ interface AddressData {
   phone?: string | null
 }
 
-/** Shipping added back in now that it tested clean on its own. */
+
 export default function AddressesPage() {
   const authToken = useAuthStore((s) => s.authToken)
   const [billing, setBilling] = useState<AddressData | null>(null)

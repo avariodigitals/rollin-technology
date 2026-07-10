@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/components/account/OrderCard.tsx
+
 "use client"
 
 import { useState } from "react"

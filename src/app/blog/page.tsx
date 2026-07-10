@@ -1,37 +1,22 @@
+
 import Container from "@/components/shared/Container"
 import { BlogCard } from "@/components/content/BlogCard"
+import { fetchGraphQL } from "@/lib/graphql"
+import { GET_BLOG_POSTS } from "@/lib/queries"
 
-/**
- * MOCK DATA: no CMS/blog API integration exists yet. Titles/categories
- * below are the 3 real posts visible in the Figma Blog frame (that
- * screenshot repeats them 3× in a 3x3 grid, which reads as mockup filler
- * rather than 9 distinct real posts — rendered once each here instead of
- * mechanically tripling). No blog post images are wired in: Figma's actual
- * photography wasn't supplied as an exportable asset, so cards fall back
- * to a plain block rather than substituting unlicensed stock photography.
- */
-const posts = [
-  {
-    slug: "choosing-the-right-business-laptop-in-2025",
-    title: "Choosing the right business laptop in 2025",
-    category: "Buying Guide",
-    readTime: "8 min",
-  },
-  {
-    slug: "hybrid-solar-for-smbs-a-practical-sizing-guide",
-    title: "Hybrid solar for SMBs: a practical sizing guide",
-    category: "Solar",
-    readTime: "6 min",
-  },
-  {
-    slug: "mikrotik-vs-cisco-for-growing-offices",
-    title: "MikroTik vs Cisco for growing offices",
-    category: "Networking",
-    readTime: "5 min",
-  },
-]
+const POSTS_PER_PAGE = 9
 
-export default function BlogPage() {
+interface BlogPageProps {
+  searchParams: Promise<{ after?: string }>
+}
+
+export default async function BlogPage({ searchParams }: BlogPageProps) {
+  const { after } = await searchParams
+  const data = await fetchGraphQL(GET_BLOG_POSTS, { first: POSTS_PER_PAGE, after: after ?? null })
+
+  const posts = data?.posts?.nodes ?? []
+  const pageInfo = data?.posts?.pageInfo
+
   return (
     <Container>
       <div className="py-10">
@@ -44,12 +29,41 @@ export default function BlogPage() {
           opportunities.
         </p>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
-            <BlogCard key={post.slug} {...post} />
-          ))}
-        </div>
+        {posts.length === 0 ? (
+          <p className="mt-10 text-center text-sm text-muted-foreground">No posts published yet.</p>
+        ) : (
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post: { id: string; slug: string; title: string; excerpt?: string; categories?: { nodes: { name: string }[] }; featuredImage?: { node: { sourceUrl: string } } }) => (
+              <BlogCard
+                key={post.id}
+                slug={post.slug}
+                title={post.title}
+                category={post.categories?.nodes?.[0]?.name ?? "Rollin"}
+                readTime={estimateReadTime(post.excerpt)}
+                image={post.featuredImage?.node?.sourceUrl}
+              />
+            ))}
+          </div>
+        )}
+
+        {pageInfo?.hasNextPage && (
+          <div className="mt-10 flex justify-center">
+            <a
+              href={`/blog?after=${encodeURIComponent(pageInfo.endCursor)}`}
+              className="rounded-lg border px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-muted"
+            >
+              Load more
+            </a>
+          </div>
+        )}
       </div>
     </Container>
   )
+}
+
+function estimateReadTime(excerptHtml: string | undefined): string {
+  if (!excerptHtml) return "3 min"
+  const words = excerptHtml.replace(/<[^>]+>/g, "").split(/\s+/).filter(Boolean).length
+  const minutes = Math.max(1, Math.round(words / 40))
+  return `${minutes} min`
 }
