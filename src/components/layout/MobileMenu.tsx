@@ -104,7 +104,7 @@ export default function MobileMenu({ categories }: MobileMenuProps) {
             alt="Rollin Technologies"
             width={220}
             height={64}
-            className="h-auto w-[220px]"
+            className="h-auto w-[130px] sm:w-[220px]"
             priority
           />
         </Link>
@@ -280,7 +280,7 @@ export default function MobileMenu({ categories }: MobileMenuProps) {
                 alt="Rollin Technologies"
                 width={220}
                 height={64}
-                className="h-auto w-[220px]"
+                className="h-auto w-[130px] sm:w-[220px]"
               />
               <button
                 type="button"

@@ -187,7 +187,7 @@ export default async function Footer() {
 
         <div className="border-t py-6">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-center text-sm text-muted-foreground sm:text-left">
               © {new Date().getFullYear()} Rollin Technology. All rights reserved. Developed by{" "}
               <a
                 href="https://avariodigitals.com"

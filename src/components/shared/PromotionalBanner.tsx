@@ -46,8 +46,8 @@ export function PromotionalBanner({
       <Container>
         <div
           className={cn(
-            "flex flex-col items-start gap-8 lg:flex-row lg:items-center",
-            alignment === "center" && "lg:justify-center",
+            "flex flex-col gap-8 lg:flex-row lg:items-center",
+            alignment === "center" ? "items-center lg:justify-center" : "items-start",
             alignment === "right" && "lg:flex-row-reverse"
           )}
         >
@@ -73,7 +73,7 @@ export function PromotionalBanner({
             >
               {description}
             </p>
-            <div className="mt-5 flex flex-wrap gap-3">
+            <div className={cn("mt-5 flex flex-wrap gap-3", alignment === "center" && "justify-center")}>
               <Link
                 href={primaryCta.href}
                 className={cn(

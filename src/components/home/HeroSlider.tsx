@@ -162,14 +162,14 @@ export default function HeroSlider() {
       </div>
       <Container>
         <div className="grid items-center gap-10 lg:grid-cols-2 min-h-[320px] sm:min-h-[380px]">
-          <div>
+          <div className="order-2 text-center lg:order-1 lg:text-left">
             <h1 className="font-heading text-3xl font-bold sm:text-4xl lg:text-[42px] leading-tight">
               {slide.headline}
             </h1>
-            <p className={cn("mt-4 max-w-md text-base leading-relaxed", slide.theme === "dark" ? "text-white/80" : "text-muted-foreground")}>
+            <p className={cn("mt-4 max-w-md text-base leading-relaxed mx-auto lg:mx-0", slide.theme === "dark" ? "text-white/80" : "text-muted-foreground")}>
               {slide.subline}
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap justify-center gap-3 lg:justify-start">
               <Link
                 href={slide.primaryCta.href}
                 className={cn(
@@ -197,7 +197,7 @@ export default function HeroSlider() {
             </div>
           </div>
 
-          <div className="relative h-64 w-full overflow-hidden rounded-xl bg-muted/40 sm:h-80">
+          <div className="relative order-1 h-64 w-full overflow-hidden rounded-xl bg-muted/40 sm:h-80 lg:order-2">
             <Image
               src={slide.image}
               alt=""

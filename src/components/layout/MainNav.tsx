@@ -22,7 +22,7 @@ export default function MainNav({ categories }: MainNavProps) {
               width={280}
               height={80}
               priority
-              className="h-[88px] w-auto bg-transparent object-contain"
+              className="h-[72px] w-auto bg-transparent object-contain"
             />
           </Link>
 

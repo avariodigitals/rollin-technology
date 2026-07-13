@@ -1,13 +1,15 @@
 
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import GoogleAnalytics from "@/components/seo/GoogleAnalytics";
 import JsonLd from "@/components/seo/JsonLd";
 import { BASE_URL, DEFAULT_DESCRIPTION, DEFAULT_KEYWORDS, ORGANIZATION_JSON_LD } from "@/lib/seo";
+
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 const inter = Inter({
   variable: "--font-inter",
@@ -102,7 +104,24 @@ export default function RootLayout({
       className={`${inter.variable} ${montserrat.variable}`}
     >
       <body>
-        <GoogleAnalytics />
+        {GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="beforeInteractive"
+            />
+            <Script id="google-analytics" strategy="beforeInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_ID}', {
+                  page_path: window.location.pathname,
+                });
+              `}
+            </Script>
+          </>
+        )}
         <JsonLd data={ORGANIZATION_JSON_LD} />
         <Navbar />
         <main>{children}</main>
