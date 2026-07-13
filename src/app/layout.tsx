@@ -9,7 +9,7 @@ import Footer from "@/components/layout/Footer";
 import JsonLd from "@/components/seo/JsonLd";
 import { BASE_URL, DEFAULT_DESCRIPTION, DEFAULT_KEYWORDS, ORGANIZATION_JSON_LD } from "@/lib/seo";
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+const GA_ID = "G-BTHZTJGV2F";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION,
+    google: "zI7AB2fcJsUrLFfItOpSTQqmi_vy3AC58vq5H5fatIg",
   },
   icons: {
     icon: {
@@ -103,25 +103,19 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${montserrat.variable}`}
     >
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+        strategy="beforeInteractive"
+      />
+      <Script id="google-analytics" strategy="beforeInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${GA_ID}');
+        `}
+      </Script>
       <body>
-        {GA_ID && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-              strategy="beforeInteractive"
-            />
-            <Script id="google-analytics" strategy="beforeInteractive">
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${GA_ID}', {
-                  page_path: window.location.pathname,
-                });
-              `}
-            </Script>
-          </>
-        )}
         <JsonLd data={ORGANIZATION_JSON_LD} />
         <Navbar />
         <main>{children}</main>
