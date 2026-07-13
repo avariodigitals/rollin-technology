@@ -34,7 +34,7 @@ const slides: Slide[] = [
     subline:
       "Bulk ordering, formal quotations, dedicated account support, and corporate procurement made simple.",
     primaryCta: { label: "Request a Quote", href: "/procurement" },
-    secondaryCta: { label: "Open Corporate Account", href: "/procurement/corporate" },
+    secondaryCta: { label: "Speak to Sales team", href: "/procurement/corporate" },
     image: "https://central.rollin.ng/wp-content/uploads/2026/07/server_rollin.png",
     theme: "green",
   },

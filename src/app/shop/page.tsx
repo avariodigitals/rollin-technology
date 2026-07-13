@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Container from "@/components/shared/Container"
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs"
 import { ProductFilterSidebar } from "@/components/commerce/ProductFilterSidebar"
+import { MobileFilterDrawer } from "@/components/commerce/MobileFilterDrawer"
 import { SortSelect } from "@/components/commerce/SortSelect"
 import { InfiniteProductGrid } from "@/components/commerce/InfiniteProductGrid"
 import { fetchGraphQL } from "@/lib/graphql"
@@ -79,14 +80,32 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       <p className="mt-1 mb-6 text-sm text-muted-foreground">genuine warranty · nationwide delivery</p>
 
       <div className="grid gap-8 pb-16 lg:grid-cols-[260px_1fr]">
-        <ProductFilterSidebar
-          categories={categories}
-          brands={brands}
-          selectedCategories={selectedCategories}
-          selectedBrands={selectedBrands}
-          selectedPrice={params.price}
-          inStockOnly={inStockOnly}
-        />
+        <div className="hidden lg:block">
+          <ProductFilterSidebar
+            categories={categories}
+            brands={brands}
+            selectedCategories={selectedCategories}
+            selectedBrands={selectedBrands}
+            selectedPrice={params.price}
+            inStockOnly={inStockOnly}
+          />
+        </div>
+
+        <MobileFilterDrawer
+          activeCount={selectedCategories.length + selectedBrands.length + (params.price ? 1 : 0) + (inStockOnly ? 1 : 0)}
+          formId="mobile-filter-form"
+        >
+          <ProductFilterSidebar
+            formId="mobile-filter-form"
+            showSubmitButton={false}
+            categories={categories}
+            brands={brands}
+            selectedCategories={selectedCategories}
+            selectedBrands={selectedBrands}
+            selectedPrice={params.price}
+            inStockOnly={inStockOnly}
+          />
+        </MobileFilterDrawer>
 
         <div>
           <div className="mb-4 flex items-center justify-between">

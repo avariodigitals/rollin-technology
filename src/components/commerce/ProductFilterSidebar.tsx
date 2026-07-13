@@ -16,6 +16,8 @@ interface ProductFilterSidebarProps {
   selectedBrands: string[]
   selectedPrice?: string
   inStockOnly: boolean
+  formId?: string
+  showSubmitButton?: boolean
 }
 
 
@@ -26,9 +28,11 @@ export function ProductFilterSidebar({
   selectedBrands,
   selectedPrice,
   inStockOnly,
+  formId,
+  showSubmitButton = true,
 }: ProductFilterSidebarProps) {
   return (
-    <form method="get" className="h-fit space-y-6 rounded-xl border bg-white p-5">
+    <form id={formId} method="get" className="h-fit space-y-6 rounded-xl border bg-white p-5">
       {categories && categories.length > 0 && (
         <div>
           <p className="text-xs font-semibold tracking-wide text-foreground uppercase">Categories</p>
@@ -103,9 +107,11 @@ export function ProductFilterSidebar({
         </div>
       </div>
 
-      <Button type="submit" className="h-11 w-full rounded-lg">
-        Apply Filters
-      </Button>
+      {showSubmitButton && (
+        <Button type="submit" className="h-11 w-full rounded-lg">
+          Apply Filters
+        </Button>
+      )}
     </form>
   )
 }

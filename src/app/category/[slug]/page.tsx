@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 import Container from "@/components/shared/Container"
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs"
 import { ProductFilterSidebar } from "@/components/commerce/ProductFilterSidebar"
+import { MobileFilterDrawer } from "@/components/commerce/MobileFilterDrawer"
 import { SortSelect } from "@/components/commerce/SortSelect"
 import { InfiniteProductGrid } from "@/components/commerce/InfiniteProductGrid"
 import { fetchGraphQL } from "@/lib/graphql"
@@ -131,13 +132,30 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       </p>
 
       <div className="grid gap-8 pb-16 lg:grid-cols-[260px_1fr]">
-        <ProductFilterSidebar
-          brands={brands}
-          selectedCategories={[]}
-          selectedBrands={selectedBrands}
-          selectedPrice={sp.price}
-          inStockOnly={inStockOnly}
-        />
+        <div className="hidden lg:block">
+          <ProductFilterSidebar
+            brands={brands}
+            selectedCategories={[]}
+            selectedBrands={selectedBrands}
+            selectedPrice={sp.price}
+            inStockOnly={inStockOnly}
+          />
+        </div>
+
+        <MobileFilterDrawer
+          activeCount={selectedBrands.length + (sp.price ? 1 : 0) + (inStockOnly ? 1 : 0)}
+          formId="mobile-filter-form"
+        >
+          <ProductFilterSidebar
+            formId="mobile-filter-form"
+            showSubmitButton={false}
+            brands={brands}
+            selectedCategories={[]}
+            selectedBrands={selectedBrands}
+            selectedPrice={sp.price}
+            inStockOnly={inStockOnly}
+          />
+        </MobileFilterDrawer>
 
         <div>
           <div className="mb-4 flex items-center justify-between">
