@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs"
 import { ComingSoonPage } from "@/components/shared/ComingSoonPage"
 
 export const metadata: Metadata = {
@@ -11,9 +12,16 @@ export const metadata: Metadata = {
 
 export default function CareersPage() {
   return (
-    <ComingSoonPage
-      title="Careers at Rollin"
-      description="We're not listing open roles yet. Check back soon, or reach out to sales@rollin.ng."
-    />
+    <>
+      <div className="mx-auto max-w-7xl px-4">
+        <div className="py-2 md:py-4">
+          <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Careers" }]} />
+        </div>
+      </div>
+      <ComingSoonPage
+        title="Careers at Rollin"
+        description="We're not listing open roles yet. Check back soon, or reach out to sales@rollin.ng."
+      />
+    </>
   )
 }

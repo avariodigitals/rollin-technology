@@ -89,7 +89,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     <Container>
       <JsonLd data={productJsonLd} />
       <JsonLd data={breadcrumbJsonLd} />
-      <div className="py-4">
+      <div className="py-2 md:py-4">
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },

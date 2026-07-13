@@ -70,7 +70,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
   return (
     <Container>
-      <div className="py-4">
+      <div className="py-2 md:py-4">
         <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Categories" }]} />
       </div>
 

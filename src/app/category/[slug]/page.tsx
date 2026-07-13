@@ -116,7 +116,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   return (
     <Container>
       <JsonLd data={breadcrumbJsonLd} />
-      <div className="py-4">
+      <div className="py-2 md:py-4">
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },

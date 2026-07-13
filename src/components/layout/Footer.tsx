@@ -20,21 +20,6 @@ const companyLinks: FooterLink[] = [
   { label: "Contact", href: "/contact" },
 ]
 
-const solarLinks: FooterLink[] = [
-  { label: "Solar Panels", href: "/category/solar-panels" },
-  { label: "Inverters", href: "/category/inverters" },
-  { label: "Batteries", href: "/category/batteries" },
-  { label: "Power Stations", href: "/category/power-stations" },
-  { label: "Solar Kits", href: "/category/solar-kits" },
-  { label: "Solar Accessories", href: "/category/solar-accessories" },
-]
-
-const businessLinks: FooterLink[] = [
-  { label: "Bulk Ordering", href: "/procurement" },
-  { label: "School Procurement", href: "/procurement/schools" },
-  { label: "Request a Quote", href: "/procurement" },
-]
-
 const supportLinks: FooterLink[] = [
   { label: "Warranty", href: "/warranty" },
   { label: "Delivery Information", href: "/delivery" },
@@ -42,6 +27,12 @@ const supportLinks: FooterLink[] = [
   { label: "FAQs", href: "/faq" },
   { label: "Track Order", href: "/account/orders" },
   { label: "Contact Support", href: "/contact" },
+]
+
+const businessLinks: FooterLink[] = [
+  { label: "Bulk Ordering", href: "/procurement" },
+  { label: "School Procurement", href: "/procurement/schools" },
+  { label: "Request a Quote", href: "/procurement" },
 ]
 
 const legalLinks: FooterLink[] = [
@@ -74,8 +65,42 @@ async function getPopulatedCategoryLinks(): Promise<FooterLink[]> {
   }
 }
 
+const GET_SOLAR_SUBCATEGORIES = `
+query GetSolarSubcategories {
+  productCategory(id: "solar-inverters", idType: SLUG) {
+    children {
+      nodes {
+        name
+        slug
+        count
+      }
+    }
+  }
+}
+`
+
+interface SolarSubcategory {
+  name: string
+  slug: string
+  count: number | null
+}
+
+async function getSolarSubcategories(): Promise<FooterLink[]> {
+  try {
+    const data = await fetchGraphQL(GET_SOLAR_SUBCATEGORIES)
+    const children = (data?.productCategory?.children?.nodes ?? []) as SolarSubcategory[]
+
+    return children
+      .filter((child) => (child.count ?? 0) > 0 || child.count === null)
+      .map((child) => ({ label: child.name, href: `/category/${child.slug}` }))
+  } catch {
+    return []
+  }
+}
+
 export default async function Footer() {
   const productLinks = await getPopulatedCategoryLinks()
+  const solarLinks = await getSolarSubcategories()
 
   return (
     <footer className="border-t bg-white">
@@ -135,13 +160,17 @@ export default async function Footer() {
           <div>
             <h4 className="font-heading text-sm font-semibold uppercase tracking-wide text-foreground">Solar Products</h4>
             <ul className="mt-4 space-y-2.5 text-base text-muted-foreground">
-              {solarLinks.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="transition-colors hover:text-primary">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
+              {solarLinks.length === 0 ? (
+                <li className="text-muted-foreground/60">Loading…</li>
+              ) : (
+                solarLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="transition-colors hover:text-primary">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))
+              )}
             </ul>
           </div>
 
