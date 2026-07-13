@@ -1,9 +1,17 @@
-
+import type { Metadata } from "next";
 import { Building2, Users, Shield, FileText } from "lucide-react"
 
 import Container from "@/components/shared/Container"
 import { PrincipleCard } from "@/components/marketing/PrincipleCard"
 import { CorporateForm } from "@/components/marketing/CorporateForm"
+
+export const metadata: Metadata = {
+  title: "Corporate Accounts",
+  description: "Dedicated account management, Net-30 invoicing, and volume pricing for business technology procurement in Nigeria.",
+  alternates: {
+    canonical: "/procurement/corporate",
+  },
+};
 
 export default function CorporateAccountsPage() {
   return (

@@ -1,4 +1,4 @@
-
+import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import Container from "@/components/shared/Container"
@@ -11,8 +11,49 @@ import { GET_PRODUCT_CATEGORIES, GET_PRODUCT_BRANDS, GET_SHOP_PRODUCTS } from "@
 import { mapProduct } from "@/lib/products/mapProduct"
 import { PRICE_BRACKETS } from "@/lib/priceBrackets"
 import type { Product, ProductCategory } from "@/types/product"
+import { BASE_URL } from "@/lib/seo"
+import JsonLd from "@/components/seo/JsonLd"
+import { buildBreadcrumbJsonLd } from "@/lib/seo"
 
 const PRODUCTS_PER_PAGE = 16
+
+interface CategoryPageProps {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{
+    brand?: string | string[]
+    price?: string
+    inStock?: string
+    sort?: string
+    after?: string
+  }>
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const categoriesData = await fetchGraphQL(GET_PRODUCT_CATEGORIES)
+  const categoryMeta = ((categoriesData?.productCategories?.nodes ?? []) as ProductCategory[]).find(
+    (c) => c.slug === slug
+  )
+
+  if (!categoryMeta) {
+    return {
+      title: "Category Not Found",
+    }
+  }
+
+  return {
+    title: categoryMeta.name,
+    description: `Shop ${categoryMeta.name} at Rollin Technology. ${categoryMeta.count ?? 0} genuine products with warranty and nationwide delivery.`,
+    openGraph: {
+      title: categoryMeta.name,
+      description: `Shop ${categoryMeta.name} at Rollin Technology. ${categoryMeta.count ?? 0} genuine products with warranty and nationwide delivery.`,
+      url: `/category/${slug}`,
+    },
+    alternates: {
+      canonical: `/category/${slug}`,
+    },
+  }
+}
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>
@@ -70,8 +111,15 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
   const pageInfo = productsData?.products?.pageInfo
 
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: "Home", item: BASE_URL },
+    { name: "Categories", item: `${BASE_URL}/shop` },
+    { name: categoryMeta.name, item: `${BASE_URL}/category/${slug}` },
+  ])
+
   return (
     <Container>
+      <JsonLd data={breadcrumbJsonLd} />
       <div className="py-4">
         <Breadcrumbs
           items={[

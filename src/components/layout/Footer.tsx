@@ -4,48 +4,51 @@ import { Phone, Mail, MapPin } from "lucide-react"
 import { FaFacebookF, FaInstagram, FaXTwitter, FaLinkedinIn } from "react-icons/fa6"
 
 import Container from "@/components/shared/Container"
-import { PlaceholderLink } from "@/components/shared/PlaceholderLink"
 import { fetchGraphQL } from "@/lib/graphql"
 import { GET_PRODUCT_CATEGORIES } from "@/lib/queries"
 import type { ProductCategory } from "@/types/product"
 
 interface FooterLink {
   label: string
-  href?: string
-  placeholder?: boolean
+  href: string
 }
 
+const companyLinks: FooterLink[] = [
+  { label: "About Us", href: "/about" },
+  { label: "Blog", href: "/blog" },
+  { label: "Careers", href: "/careers" },
+  { label: "Contact", href: "/contact" },
+]
 
+const solarLinks: FooterLink[] = [
+  { label: "Solar Panels", href: "/category/solar-panels" },
+  { label: "Inverters", href: "/category/inverters" },
+  { label: "Batteries", href: "/category/batteries" },
+  { label: "Power Stations", href: "/category/power-stations" },
+  { label: "Solar Kits", href: "/category/solar-kits" },
+  { label: "Solar Accessories", href: "/category/solar-accessories" },
+]
 
-const staticColumns: { title: string; links: FooterLink[] }[] = [
-{
-  title: "Company",
-  links: [
-    { label: "About Us", href: "/about" },
-    { label: "Blog", href: "/blog" },
-    { label: "Careers", href: "/careers" },
-    { label: "Contact", href: "/contact" },
-  ],
-},
- 
-{
-  title: "Business",
-  links: [
-    { label: "Corporate Accounts", href: "/procurement/corporate" },
-    { label: "Government Procurement", href: "/procurement/government" },
-    { label: "School Procurement", href: "/procurement/schools" },
-    { label: "Request a Quote", href: "/procurement" },
-  ],
-},
-  {
-    title: "Support",
-    links: [
-      { label: "Warranty", href: "/faq#warranty" },
-      { label: "Returns", href: "/faq#returns" },
-      { label: "Shipping", href: "/faq#shipping" },
-      { label: "FAQs", href: "/faq" },
-    ],
-  },
+const businessLinks: FooterLink[] = [
+  { label: "Bulk Ordering", href: "/procurement" },
+  { label: "School Procurement", href: "/procurement/schools" },
+  { label: "Request a Quote", href: "/procurement" },
+]
+
+const supportLinks: FooterLink[] = [
+  { label: "Warranty", href: "/warranty" },
+  { label: "Delivery Information", href: "/delivery" },
+  { label: "Returns", href: "/refund" },
+  { label: "FAQs", href: "/faq" },
+  { label: "Track Order", href: "/account/orders" },
+  { label: "Contact Support", href: "/contact" },
+]
+
+const legalLinks: FooterLink[] = [
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms and Conditions", href: "/terms" },
+  { label: "Refund Policy", href: "/refund" },
+  { label: "Warranty Policy", href: "/warranty-policy" },
 ]
 
 const socials = [
@@ -55,7 +58,6 @@ const socials = [
   { icon: FaLinkedinIn, href: "https://linkedin.com/company/rollin-ng", label: "LinkedIn" },
 ]
 
-
 async function getPopulatedCategoryLinks(): Promise<FooterLink[]> {
   try {
     const data = await fetchGraphQL(GET_PRODUCT_CATEGORIES)
@@ -63,11 +65,11 @@ async function getPopulatedCategoryLinks(): Promise<FooterLink[]> {
 
     return categories
       .filter((category) => (category.count ?? 0) > 0)
+      .filter((category) => !category.parentId)
       .sort((a, b) => (b.count ?? 0) - (a.count ?? 0))
-      .slice(0, 4)
+      .slice(0, 6)
       .map((category) => ({ label: category.name, href: `/category/${category.slug}` }))
   } catch {
-  
     return []
   }
 }
@@ -78,54 +80,63 @@ export default async function Footer() {
   return (
     <footer className="border-t bg-white">
       <Container>
-        <div className="grid gap-10 py-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
+        <div className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr_1fr]">
           <div>
-            <Image src="/logo.svg" alt="Rollin Technologies" width={120} height={32} className="h-8 w-auto" />
- 
-            <p className="mt-4 max-w-xs text-sm text-muted-foreground">
+            <Image src="https://central.rollin.ng/wp-content/uploads/2026/07/thelogorollin.png" alt="Rollin Technologies" width={240} height={64} className="h-16 w-auto" />
+            <p className="mt-4 max-w-xs text-base leading-relaxed text-muted-foreground">
               Technology you can trust. Premium devices, solar, networking and
               procurement services for individuals and businesses across
               Nigeria.
             </p>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+            <ul className="mt-4 space-y-2 text-base text-muted-foreground">
               <li className="flex items-center gap-2">
-                <Phone className="size-3.5" /> +234 814 846 4823
+                <Phone className="size-4" /> +234 814 846 4823
               </li>
               <li className="flex items-center gap-2">
-                <Mail className="size-3.5" /> hello@rollin.ng
+                <Mail className="size-4" /> sales@rollin.ng
               </li>
               <li className="flex items-center gap-2">
-                <MapPin className="size-3.5" /> Lagos · Abuja · Port Harcourt
+                <MapPin className="size-4" /> Block 505, Kodesho Street, Ikeja, Lagos
               </li>
             </ul>
+            <div className="mt-4 flex items-center gap-3">
+              {socials.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  className="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground transition hover:bg-primary/90"
+                >
+                  <social.icon className="size-4" />
+                </a>
+              ))}
+            </div>
           </div>
 
           <div>
-            <h4 className="font-heading text-sm font-semibold text-foreground">{staticColumns[0].title}</h4>
-            <ul className="mt-3 space-y-2.5 text-sm text-muted-foreground">
-              {staticColumns[0].links.map((link) => (
-                <li key={link.label}>
-                  {link.placeholder || !link.href ? (
-                    <PlaceholderLink label={link.label} />
-                  ) : (
-                    <Link href={link.href} className="transition-colors hover:text-primary">
-                      {link.label}
-                    </Link>
-                  )}
+            <h4 className="font-heading text-sm font-semibold uppercase tracking-wide text-foreground">Company</h4>
+            <ul className="mt-4 space-y-2.5 text-base text-muted-foreground">
+              {companyLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="transition-colors hover:text-primary">
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
           <div>
-            <h4 className="font-heading text-sm font-semibold text-foreground">Products</h4>
-            <ul className="mt-3 space-y-2.5 text-sm text-muted-foreground">
+            <h4 className="font-heading text-sm font-semibold uppercase tracking-wide text-foreground">Products</h4>
+            <ul className="mt-4 space-y-2.5 text-base text-muted-foreground">
               {productLinks.length === 0 ? (
                 <li className="text-muted-foreground/60">Catalog loading…</li>
               ) : (
                 productLinks.map((link) => (
-                  <li key={link.label}>
-                    <Link href={link.href!} className="transition-colors hover:text-primary">
+                  <li key={link.href}>
+                    <Link href={link.href} className="transition-colors hover:text-primary">
                       {link.label}
                     </Link>
                   </li>
@@ -134,46 +145,67 @@ export default async function Footer() {
             </ul>
           </div>
 
-          {staticColumns.slice(1).map((column) => (
-            <div key={column.title}>
-              <h4 className="font-heading text-sm font-semibold text-foreground">{column.title}</h4>
-              <ul className="mt-3 space-y-2.5 text-sm text-muted-foreground">
-                {column.links.map((link) => (
-                  <li key={link.label}>
-                    {link.placeholder || !link.href ? (
-                      <PlaceholderLink label={link.label} />
-                    ) : (
-                      <Link href={link.href} className="transition-colors hover:text-primary">
-                        {link.label}
-                      </Link>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div>
+            <h4 className="font-heading text-sm font-semibold uppercase tracking-wide text-foreground">Solar Products</h4>
+            <ul className="mt-4 space-y-2.5 text-base text-muted-foreground">
+              {solarLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="transition-colors hover:text-primary">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-heading text-sm font-semibold uppercase tracking-wide text-foreground">Business</h4>
+            <ul className="mt-4 space-y-2.5 text-base text-muted-foreground">
+              {businessLinks.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href} className="transition-colors hover:text-primary">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-heading text-sm font-semibold uppercase tracking-wide text-foreground">Support</h4>
+            <ul className="mt-4 space-y-2.5 text-base text-muted-foreground">
+              {supportLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="transition-colors hover:text-primary">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        <div className="flex flex-col items-center justify-between gap-4 border-t py-6 sm:flex-row">
-          <p className="text-xs text-muted-foreground">
-  © {new Date().getFullYear()} Rollin Technology. All rights reserved. · Built by{" "}
-  <a href="https://avariodigitals.com/" target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline">
-    Avario Digitals
-  </a>
-</p>
-          <div className="flex items-center gap-3">
-            {socials.map((social) => (
+        <div className="border-t py-6">
+          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+            <p className="text-sm text-muted-foreground">
+              © {new Date().getFullYear()} Rollin Technology. All rights reserved. Developed by{" "}
               <a
-                key={social.label}
-                href={social.href}
+                href="https://avariodigitals.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={social.label}
-                className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground transition hover:bg-primary hover:text-primary-foreground"
+                className="underline hover:text-primary"
               >
-                <social.icon className="size-3.5" />
+                Avario Digitals
               </a>
-            ))}
+              .
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
+              {legalLinks.map((link) => (
+                <Link key={link.href} href={link.href} className="transition-colors hover:text-primary">
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </Container>

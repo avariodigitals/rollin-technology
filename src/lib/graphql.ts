@@ -3,18 +3,34 @@ import { useAuthStore } from "@/lib/store/authStore";
 
 const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_WORDPRESS_API!;
 
-async function rawFetch(query: string, variables: Record<string, unknown>, authToken?: string | null) {
+async function rawFetch(
+  query: string,
+  variables: Record<string, unknown>,
+  authToken?: string | null,
+  signal?: AbortSignal
+) {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (authToken) {
     headers.Authorization = `Bearer ${authToken}`;
   }
 
-  const response = await fetch(GRAPHQL_ENDPOINT, {
+  const fetchOptions: RequestInit = {
     method: "POST",
     headers,
     body: JSON.stringify({ query, variables }),
-    next: { revalidate: authToken ? 0 : 60 },
-  });
+  };
+
+  if (signal) {
+    fetchOptions.signal = signal;
+  } else {
+    (fetchOptions as any).next = { revalidate: authToken ? 0 : 60 };
+  }
+
+  const response = await fetch(GRAPHQL_ENDPOINT, fetchOptions);
+
+  if (!response.ok) {
+    console.error(`GraphQL fetch failed: ${response.status} ${response.statusText} at ${GRAPHQL_ENDPOINT}`)
+  }
 
   return response.json();
 }
@@ -31,9 +47,10 @@ mutation RefreshToken($jwtRefreshToken: String!) {
 export async function fetchGraphQL(
   query: string,
   variables: Record<string, unknown> = {},
-  authToken?: string | null
+  authToken?: string | null,
+  signal?: AbortSignal
 ) {
-  let json = await rawFetch(query, variables, authToken);
+  let json = await rawFetch(query, variables, authToken, signal);
 
   if (json.errors && authToken) {
     const { refreshToken, user } = useAuthStore.getState();
@@ -43,13 +60,17 @@ export async function fetchGraphQL(
 
       if (newToken && user) {
         useAuthStore.getState().setSession({ authToken: newToken, refreshToken, user });
-        json = await rawFetch(query, variables, newToken);
+        json = await rawFetch(query, variables, newToken, signal);
       }
     }
   }
 
   if (json.errors) {
-    console.error("GraphQL errors:", json.errors);
+    const messages = json.errors.map((e: any) => e.message).join("; ");
+    console.warn("GraphQL errors:", messages);
+    if (!json.data) {
+      throw new Error(`GraphQL query failed: ${messages}`);
+    }
   }
 
   return json.data;

@@ -12,7 +12,7 @@ const testimonials = [
     quote:
       "We've sourced laptops, projectors and solar from Rollin for three years. Quality and after-sales support are consistently excellent.",
     name: "Tunde Bakare",
-    company: "Greenfield Schools",
+    company: "Newpine Schools",
   },
   {
     quote:
@@ -27,7 +27,7 @@ export default function Testimonials() {
   return (
     <section className="bg-muted/30 py-16">
       <Container>
-        <p className="text-xs font-semibold tracking-wide text-primary uppercase">What clients say</p>
+        <p className="text-sm font-semibold tracking-wide text-primary uppercase">What clients say</p>
         <h2 className="mt-2 font-heading text-3xl font-bold text-foreground">
           Trusted by procurement teams nationwide.
         </h2>
@@ -35,10 +35,10 @@ export default function Testimonials() {
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           {testimonials.map((t) => (
             <div key={t.name} className="rounded-xl border bg-white p-5">
-              <p className="text-sm text-muted-foreground">&ldquo;{t.quote}&rdquo;</p>
+              <p className="text-base leading-relaxed text-muted-foreground">&ldquo;{t.quote}&rdquo;</p>
               <div className="mt-4 border-t pt-3">
-                <p className="text-sm font-semibold text-foreground">{t.name}</p>
-                <p className="text-xs text-muted-foreground">{t.company}</p>
+                <p className="text-base font-semibold text-foreground">{t.name}</p>
+                <p className="text-sm text-muted-foreground">{t.company}</p>
               </div>
             </div>
           ))}

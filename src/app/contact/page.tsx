@@ -1,10 +1,18 @@
-
-import { Phone, Mail, MessageCircle } from "lucide-react"
+import type { Metadata } from "next";
+import { Phone, Mail } from "lucide-react"
+import { FaWhatsapp } from "react-icons/fa6"
 
 import Container from "@/components/shared/Container"
 import { ContactChannelCard } from "@/components/marketing/ContactChannelCard"
 import { ContactForm } from "@/components/marketing/ContactForm"
 
+export const metadata: Metadata = {
+  title: "Contact",
+  description: "Get in touch with Rollin Technology for sales, support, and corporate procurement. Phone, email, WhatsApp, and in-person at Ikeja, Lagos.",
+  alternates: {
+    canonical: "/contact",
+  },
+};
 
 export default function ContactPage() {
   return (
@@ -16,15 +24,15 @@ export default function ContactPage() {
           For sales, support or corporate procurement — choose what works for you.
         </p>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
+        <div className="mt-8 grid gap-8 lg:grid-cols-2">
           <div className="space-y-3">
             <ContactChannelCard icon={Phone} title="+234 800 000 0000" subtext="Mon–Sat, 8am–7pm WAT" />
-            <ContactChannelCard icon={Mail} title="hello@rollin.ng" subtext="Replies within 4 hours" />
-            <ContactChannelCard icon={MessageCircle} title="WhatsApp Quick Order" subtext="Fastest response" />
+            <ContactChannelCard icon={Mail} title="sales@rollin.ng" subtext="Replies within 4 hours" />
+            <ContactChannelCard icon={FaWhatsapp} title="WhatsApp Quick Order" subtext="Fastest response" />
 
             <div className="mt-4 overflow-hidden rounded-xl border">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d15852.167373045044!2d3.3691251500000003!3d6.641726299999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sng!4v1783377780154!5m2!1sen!2sng"
+                src="https://maps.google.com/maps?q=Block+505+Kodesho+Street+Ikeja+Lagos&t=&z=14&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="256"
                 style={{ border: 0 }}

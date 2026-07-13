@@ -18,12 +18,12 @@ export default async function Navbar() {
     <header className="sticky top-0 z-50 w-full bg-white">
       <div className="hidden lg:block">
         <UtilityBar />
-        <MainNav />
+        <MainNav categories={categories} />
         <SearchBar categories={categories} />
       </div>
 
       <div className="lg:hidden">
-        <MobileMenu />
+        <MobileMenu categories={categories} />
       </div>
     </header>
   );

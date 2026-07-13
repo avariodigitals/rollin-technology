@@ -3,7 +3,8 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, RefreshCw, ShoppingCart } from "lucide-react"
+import { Heart, RefreshCw, ShoppingCart, MessageCircle } from "lucide-react"
+import { FaWhatsapp } from "react-icons/fa6"
 
 import { cn } from "@/lib/utils"
 import { ProductBadge } from "@/components/shared/StatusBadge"
@@ -55,7 +56,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       <Link href={`/product/${product.slug}`} className="block">
         <div className="relative h-64 w-full bg-gray-100">
           <Image
-            src={product.image?.sourceUrl ?? "https://www.rollin.ng/wp-content/uploads/woocommerce-placeholder.webp"}
+            src={product.image?.sourceUrl || "https://www.rollin.ng/wp-content/uploads/woocommerce-placeholder.webp"}
             alt={product.name}
             fill
             sizes="(max-width: 768px) 100vw, 25vw"
@@ -66,30 +67,55 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       <div className="p-4">
         {product.brand && (
-          <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">{product.brand}</p>
+          <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{product.brand}</p>
         )}
 
         <Link href={`/product/${product.slug}`}>
-          <h3 className="mt-1 line-clamp-2 font-semibold text-foreground hover:text-primary">{product.name}</h3>
+          <h3 className="mt-1 line-clamp-2 text-base font-semibold text-foreground hover:text-primary">{product.name}</h3>
         </Link>
 
-        <div className="mt-2 flex items-center gap-2">
+        <div className="mt-2 flex flex-wrap items-center gap-2">
           <p className="text-lg font-bold text-foreground">
-            {(product.onSale && product.salePrice) || product.price || "Price on Request"}
+            {(product.onSale && product.salePrice ? product.salePrice : product.price) || "Price on Request"}
           </p>
           {product.onSale && product.regularPrice && (
             <p className="text-sm text-muted-foreground line-through">{product.regularPrice}</p>
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={() => addItem(product)}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2 font-medium text-primary-foreground transition hover:bg-primary/90"
-        >
-          <ShoppingCart className="size-4" />
-          Add to cart
-        </button>
+        <div className="mt-1.5 flex items-center gap-2 text-xs">
+          <span
+            className={cn(
+              "inline-flex items-center gap-1 font-medium",
+              product.stockStatus === "IN_STOCK" ? "text-[var(--status-success)]" : "text-muted-foreground"
+            )}
+          >
+            {product.stockStatus === "IN_STOCK" ? "In stock" : product.stockStatus === "OUT_OF_STOCK" ? "Out of stock" : ""}
+          </span>
+        </div>
+
+        <div className="mt-4 flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={() => addItem(product)}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+          >
+            <ShoppingCart className="size-4" />
+            Add to cart
+          </button>
+
+          <a
+            href={`https://wa.me/2348148464823?text=${encodeURIComponent(
+              `Hi, I'm interested in ordering: ${product.name}\nhttps://www.rollin.ng/product/${product.slug}`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-green-600 bg-green-50 py-2.5 text-sm font-medium text-green-700 transition hover:bg-green-600 hover:text-white"
+          >
+            <FaWhatsapp className="size-4" />
+            Order via WhatsApp
+          </a>
+        </div>
       </div>
     </div>
   )

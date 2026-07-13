@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "central.rollin.ng",
       },
+      {
+        protocol: "https",
+        hostname: "www.central.rollin.ng",
+      },
     ],
   },
 };

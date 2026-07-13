@@ -8,7 +8,7 @@ const items = [
   { icon: Truck, label: "Nationwide Delivery" },
   { icon: BadgeCheck, label: "Warranty Support" },
   { icon: CreditCard, label: "Secure Payments" },
-  { icon: Building2, label: "Corporate Procurement Ready" },
+  { icon: Building2, label: "Corporate Procurement" },
   { icon: Headset, label: "Expert Technical Support" },
 ]
 

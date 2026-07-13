@@ -18,7 +18,7 @@ export default async function FeaturedProducts() {
       <Container>
         <div className="mb-8 flex items-end justify-between">
           <div>
-            <p className="text-xs font-semibold tracking-wide text-primary uppercase">Featured</p>
+            <p className="text-sm font-semibold tracking-wide text-primary uppercase">Featured</p>
             <h2 className="mt-2 text-3xl font-bold text-foreground">Hand-picked this week</h2>
           </div>
           <Link href="/shop" className="text-sm font-medium text-primary hover:underline">

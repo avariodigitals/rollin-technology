@@ -1,8 +1,16 @@
-
+import type { Metadata } from "next";
 import Container from "@/components/shared/Container"
 import { BlogCard } from "@/components/content/BlogCard"
 import { fetchGraphQL } from "@/lib/graphql"
 import { GET_BLOG_POSTS } from "@/lib/queries"
+
+export const metadata: Metadata = {
+  title: "Blog",
+  description: "Guides, reviews, and procurement know-how from Rollin Technology. Tips for buying laptops, phones, solar products, and corporate tech in Nigeria.",
+  alternates: {
+    canonical: "/blog",
+  },
+};
 
 const POSTS_PER_PAGE = 9
 

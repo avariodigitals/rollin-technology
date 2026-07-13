@@ -35,26 +35,28 @@ export function BlogCard({ slug,
         )}
       </div>
       <div className="p-4">
-  {(category || readTime) && (
-    <p className="text-[11px] font-semibold tracking-wide text-primary uppercase">
-      {category}
-      {category && readTime ? " • " : ""}
-      {readTime}
-    </p>
-  )}
+        {(category || readTime) && (
+          <p className="text-xs font-semibold tracking-wide text-primary uppercase">
+            {category}
+            {category && readTime ? " • " : ""}
+            {readTime}
+          </p>
+        )}
 
-  {formattedDate && (
-    <p className="text-[11px] font-semibold tracking-wide text-primary uppercase">
-      {formattedDate}
-    </p>
-  )}
+        {formattedDate && (
+          <p className="text-xs font-semibold tracking-wide text-primary uppercase">
+            {formattedDate}
+          </p>
+        )}
 
-  <h3 className="mt-1 line-clamp-2 font-heading text-sm font-semibold text-foreground group-hover:text-primary">
-    {title}
-  </h3>
+        <h3 className="mt-1 line-clamp-2 font-heading text-base font-semibold text-foreground group-hover:text-primary">
+          {title}
+        </h3>
 
-  ...
-</div>
+        {excerpt && (
+          <p className="mt-2 line-clamp-2 text-sm text-muted-foreground" dangerouslySetInnerHTML={{ __html: excerpt }} />
+        )}
+      </div>
     </Link>
   )
 }

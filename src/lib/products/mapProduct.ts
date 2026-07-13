@@ -7,7 +7,8 @@ export interface RawProductNode {
   databaseId: number
   name: string
   slug: string
-  image?: { sourceUrl: string } | null
+  image?: { sourceUrl: string | null; mediaItemUrl?: string | null } | null
+  featuredImage?: { node?: { sourceUrl: string | null; mediaItemUrl?: string | null } | null } | null
   price?: string | null
   regularPrice?: string | null
   salePrice?: string | null
@@ -17,6 +18,29 @@ export interface RawProductNode {
   productTags?: { nodes: { name: string; slug: string }[] } | null
   /** NEW — real brand taxonomy data, now included in every product query. */
   productBrands?: { nodes: { name: string; slug: string }[] } | null
+}
+
+const PLACEHOLDER_URL = "https://www.rollin.ng/wp-content/uploads/woocommerce-placeholder.webp"
+const WP_BASE_URL = "https://www.rollin.ng"
+
+export function normalizeImageUrl(
+  img?: { sourceUrl?: string | null; mediaItemUrl?: string | null } | null
+): { sourceUrl: string } | undefined {
+  if (!img) return undefined
+  const raw = img.sourceUrl || img.mediaItemUrl
+  if (!raw || raw.trim() === "") return undefined
+
+  let url = raw.trim()
+  // Convert relative URLs to absolute
+  if (url.startsWith("/")) {
+    url = `${WP_BASE_URL}${url}`
+  }
+  // Must be a valid absolute URL
+  if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    return undefined
+  }
+
+  return { sourceUrl: url }
 }
 
 export function mapProduct(node: RawProductNode): Product {
@@ -36,7 +60,8 @@ export function mapProduct(node: RawProductNode): Product {
     categories,
     tags,
     brands,
-    image: node.image ?? undefined,
+    image: normalizeImageUrl(node.image) || normalizeImageUrl(node.featuredImage?.node) || undefined,
+    stockStatus: (node as any).stockStatus ?? undefined,
   }
 
   return {

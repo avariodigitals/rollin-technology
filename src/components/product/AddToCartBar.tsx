@@ -3,6 +3,7 @@
 
 import { useState } from "react"
 import { Minus, Plus, ShoppingCart, MessageCircle } from "lucide-react"
+import { FaWhatsapp } from "react-icons/fa6"
 
 import { Button } from "@/components/ui/button"
 import { useCartStore } from "@/lib/store/cartStore"
@@ -53,7 +54,7 @@ export function AddToCartBar({ product, disabled, maxQuantity = 99 }: AddToCartB
         rel="noopener noreferrer"
         aria-disabled={disabled}
         className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 aria-disabled:pointer-events-none aria-disabled:opacity-40"
-      >
+      >FaWhatpp
         <MessageCircle className="size-4" />
         Order on WhatsApp
       </a>

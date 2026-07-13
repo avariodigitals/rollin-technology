@@ -1,4 +1,4 @@
-// TARGET PATH IN REPO: src/app/shop/page.tsx (replaces existing)
+import type { Metadata } from "next";
 import Container from "@/components/shared/Container"
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs"
 import { ProductFilterSidebar } from "@/components/commerce/ProductFilterSidebar"
@@ -9,6 +9,14 @@ import { GET_PRODUCT_CATEGORIES, GET_PRODUCT_BRANDS, GET_SHOP_PRODUCTS } from "@
 import { mapProduct } from "@/lib/products/mapProduct"
 import { PRICE_BRACKETS } from "@/lib/priceBrackets"
 import type { Product, ProductCategory } from "@/types/product"
+
+export const metadata: Metadata = {
+  title: "Shop",
+  description: "Browse genuine laptops, phones, solar products, networking gear, and accessories. Filter by brand, price, and availability. Nationwide delivery.",
+  alternates: {
+    canonical: "/shop",
+  },
+};
 
 const PRODUCTS_PER_PAGE = 16
 

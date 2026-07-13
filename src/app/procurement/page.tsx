@@ -1,4 +1,4 @@
-
+import type { Metadata } from "next";
 
 import { Building2, Landmark, GraduationCap, HeartHandshake, Boxes, UserCheck } from "lucide-react"
 
@@ -6,6 +6,13 @@ import Container from "@/components/shared/Container"
 import { PrincipleCard } from "@/components/marketing/PrincipleCard"
 import { ProcurementForm } from "@/components/marketing/ProcurementForm"
 
+export const metadata: Metadata = {
+  title: "Bulk Procurement",
+  description: "Corporate, government, school, and NGO technology procurement. Volume pricing, Net-30 invoicing, and dedicated account management.",
+  alternates: {
+    canonical: "/procurement",
+  },
+};
 
 export default function ProcurementPage() {
   return (

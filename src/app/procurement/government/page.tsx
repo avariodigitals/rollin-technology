@@ -1,9 +1,17 @@
-
+import type { Metadata } from "next";
 import { Landmark, FileCheck, Scale, Clock } from "lucide-react"
 
 import Container from "@/components/shared/Container"
 import { PrincipleCard } from "@/components/marketing/PrincipleCard"
 import { GovernmentForm } from "@/components/marketing/GovernmentForm"
+
+export const metadata: Metadata = {
+  title: "Government Procurement",
+  description: "Tender support, framework agreements, and compliant documentation for government and public sector technology procurement in Nigeria.",
+  alternates: {
+    canonical: "/procurement/government",
+  },
+};
 
 export default function GovernmentProcurementPage() {
   return (

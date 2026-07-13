@@ -1,10 +1,18 @@
-
+import type { Metadata } from "next";
 import Link from "next/link"
 import { ShieldCheck, Users, Award, Truck, Building2, Wrench, Headphones, PackageCheck } from "lucide-react"
 
 import Container from "@/components/shared/Container"
 import { StatBlock } from "@/components/marketing/StatBlock"
 import { PrincipleCard } from "@/components/marketing/PrincipleCard"
+
+export const metadata: Metadata = {
+  title: "About Rollin Technology",
+  description: "Family-owned technology retailer in Nigeria. Genuine products, warranty-backed, with nationwide delivery and corporate procurement support.",
+  alternates: {
+    canonical: "/about",
+  },
+};
 
 export default function AboutPage() {
   return (
@@ -89,28 +97,6 @@ export default function AboutPage() {
               title="Aftersales support"
               description="In-house service centre handles warranty claims, repairs and replacements end-to-end."
             />
-          </div>
-        </Container>
-      </section>
-
-      <section className="bg-[#0B1220] py-14 text-white">
-        <Container>
-          <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-            <div>
-              <p className="text-xs font-semibold tracking-wide text-[var(--rollin-gold)] uppercase">Compliance</p>
-              <h2 className="mt-2 font-heading text-2xl font-bold">Authorised. Accountable. Audited.</h2>
-              <p className="mt-3 text-sm text-white/70">
-                We operate as a registered, accountable business — not an anonymous storefront.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <span className="rounded-lg border border-white/15 bg-white/5 px-4 py-3">Registered business</span>
-              <span className="rounded-lg border border-white/15 bg-white/5 px-4 py-3">Verified bank partner</span>
-              <span className="rounded-lg border border-white/15 bg-white/5 px-4 py-3">Insured logistics</span>
-              <span className="rounded-lg border border-white/15 bg-white/5 px-4 py-3">
-                Manufacturer-authorised reseller
-              </span>
-            </div>
           </div>
         </Container>
       </section>

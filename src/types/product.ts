@@ -42,11 +42,23 @@ export interface Product {
   image?: {
     sourceUrl: string;
   };
+  stockStatus?: "IN_STOCK" | "OUT_OF_STOCK" | "ON_BACKORDER";
 }
 
 export interface ProductAttribute {
   name: string;
   options: string[];
+}
+
+export interface ProductReview {
+  id: string;
+  rating: number;
+  content: string;
+  date: string;
+  reviewer: {
+    name: string;
+    email?: string;
+  };
 }
 
 export interface ProductDetail extends Product {
@@ -57,6 +69,7 @@ export interface ProductDetail extends Product {
   reviewCount?: number;
   stockStatus?: "IN_STOCK" | "OUT_OF_STOCK" | "ON_BACKORDER";
   galleryImages?: { sourceUrl: string }[];
+  reviews?: ProductReview[];
 }
 
 export interface ProductCategory {
@@ -64,6 +77,7 @@ export interface ProductCategory {
   name: string;
   slug: string;
   count: number | null;
+  parentId?: number | null;
   image?: {
     sourceUrl: string;
   } | null;

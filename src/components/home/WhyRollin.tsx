@@ -41,7 +41,7 @@ export default function WhyRollin() {
   return (
     <section className="bg-muted/30 py-16">
       <Container>
-        <p className="text-xs font-semibold tracking-wide text-primary uppercase">Why Rollin</p>
+        <p className="text-sm font-semibold tracking-wide text-primary uppercase">Why Rollin</p>
         <h2 className="mt-2 font-heading text-3xl font-bold text-foreground">
           Built for people who can&apos;t afford downtime.
         </h2>
@@ -52,8 +52,8 @@ export default function WhyRollin() {
               <span className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <item.icon className="size-5" />
               </span>
-              <h3 className="mt-3 font-heading text-sm font-semibold text-foreground">{item.title}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{item.description}</p>
+              <h3 className="mt-3 font-heading text-base font-semibold text-foreground">{item.title}</h3>
+              <p className="mt-1 text-base leading-relaxed text-muted-foreground">{item.description}</p>
             </div>
           ))}
         </div>

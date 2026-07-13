@@ -13,9 +13,10 @@ interface ProductGalleryProps {
 
 export function ProductGallery({ images, alt }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0)
+  const validImages = images.filter((img) => !!img?.sourceUrl && img.sourceUrl.trim() !== "")
   const safeImages =
-    images.length > 0
-      ? images
+    validImages.length > 0
+      ? validImages
       : [{ sourceUrl: "https://www.rollin.ng/wp-content/uploads/woocommerce-placeholder.webp" }]
 
   return (

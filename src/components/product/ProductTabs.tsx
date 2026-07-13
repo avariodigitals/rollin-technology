@@ -22,7 +22,12 @@ export function ProductTabs({ product }: ProductTabsProps) {
       </TabsContent>
 
       <TabsContent value="reviews">
-        <ProductReviews averageRating={product.averageRating} reviewCount={product.reviewCount} />
+        <ProductReviews
+          reviews={product.reviews}
+          averageRating={product.averageRating}
+          reviewCount={product.reviewCount}
+          productId={product.databaseId}
+        />
       </TabsContent>
 
       <TabsContent value="shipping">

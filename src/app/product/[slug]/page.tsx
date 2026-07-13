@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { CheckCircle2 } from "lucide-react"
 
@@ -9,15 +10,45 @@ import { ProductTabs } from "@/components/product/ProductTabs"
 import { ProductGrid } from "@/components/commerce/ProductGrid"
 import { ProductBadge } from "@/components/shared/StatusBadge"
 import Container from "@/components/shared/Container"
+import JsonLd from "@/components/seo/JsonLd"
 import { fetchGraphQL } from "@/lib/graphql"
 import { GET_PRODUCT_BY_SLUG, GET_FEATURED_PRODUCTS } from "@/lib/queries"
 import { mapProductDetail } from "@/lib/products/mapProductDetail"
 import { mapProduct } from "@/lib/products/mapProduct"
 import { Product } from "@/types/product"
-
+import { buildProductJsonLd, buildBreadcrumbJsonLd, BASE_URL } from "@/lib/seo"
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>
+}
+
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  const { slug } = await params
+  const data = await fetchGraphQL(GET_PRODUCT_BY_SLUG, { slug })
+
+  if (!data?.product) {
+    return {
+      title: "Product Not Found",
+    }
+  }
+
+  const product = mapProductDetail(data.product)
+  const description = product.shortDescription || product.description || `Buy ${product.name} at Rollin Technology. Genuine product with warranty and nationwide delivery.`
+  const cleanDescription = description.replace(/<[^>]+>/g, "").slice(0, 160)
+
+  return {
+    title: product.name,
+    description: cleanDescription,
+    openGraph: {
+      title: product.name,
+      description: cleanDescription,
+      url: `/product/${slug}`,
+      images: product.image ? [product.image.sourceUrl] : undefined,
+    },
+    alternates: {
+      canonical: `/product/${slug}`,
+    },
+  }
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
@@ -37,8 +68,27 @@ export default async function ProductPage({ params }: ProductPageProps) {
     .filter((p: Product) => p.slug !== product.slug)
     .slice(0, 4)
 
+  const productJsonLd = buildProductJsonLd({
+    name: product.name,
+    description: product.shortDescription || product.description || undefined,
+    image: product.image?.sourceUrl,
+    brand: product.brand,
+    price: product.price,
+    availability: product.stockStatus === "OUT_OF_STOCK" ? "OutOfStock" : "InStock",
+    url: `${BASE_URL}/product/${slug}`,
+    sku: String(product.databaseId),
+  })
+
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: "Home", item: BASE_URL },
+    { name: "Shop", item: `${BASE_URL}/shop` },
+    { name: product.name, item: `${BASE_URL}/product/${slug}` },
+  ])
+
   return (
     <Container>
+      <JsonLd data={productJsonLd} />
+      <JsonLd data={breadcrumbJsonLd} />
       <div className="py-4">
         <Breadcrumbs
           items={[

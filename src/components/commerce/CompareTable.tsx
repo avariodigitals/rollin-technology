@@ -41,7 +41,7 @@ export function CompareTable({ products, onRemove }: CompareTableProps) {
                     <div className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-gray-100">
                       <Image
                         src={
-                          product.image?.sourceUrl ??
+                          product.image?.sourceUrl ||
                           "https://www.rollin.ng/wp-content/uploads/woocommerce-placeholder.webp"
                         }
                         alt={product.name}

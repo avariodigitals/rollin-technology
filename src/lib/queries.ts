@@ -9,6 +9,61 @@ export const GET_FEATURED_PRODUCTS = `
       featured
       image {
         sourceUrl
+        mediaItemUrl
+      }
+      featuredImage {
+        node {
+          sourceUrl
+          mediaItemUrl
+        }
+      }
+      productCategories {
+        nodes {
+          name
+          slug
+        }
+      }
+      productTags {
+        nodes {
+          name
+          slug
+        }
+      }
+      productBrands {
+        nodes {
+          name
+          slug
+        }
+      }
+      ... on SimpleProduct {
+        price
+        regularPrice
+        salePrice
+        onSale
+      }
+    }
+  }
+}
+`;
+
+export const GET_NEW_ARRIVALS = `
+{
+  products(first: 8, where: { orderby: { field: DATE, order: DESC } }) {
+    nodes {
+      databaseId
+      name
+      slug
+      featured
+      date
+      image {
+        sourceUrl
+        mediaItemUrl
+      }
+      featuredImage {
+        node {
+          sourceUrl
+          mediaItemUrl
+        }
       }
       productCategories {
         nodes {
@@ -49,6 +104,11 @@ query GetProductBySlug($slug: ID!) {
     image {
       sourceUrl
     }
+    featuredImage {
+      node {
+        sourceUrl
+      }
+    }
     productCategories {
       nodes {
         name
@@ -80,6 +140,7 @@ query GetProductBySlug($slug: ID!) {
       galleryImages {
         nodes {
           sourceUrl
+          mediaItemUrl
         }
       }
       attributes {
@@ -87,6 +148,45 @@ query GetProductBySlug($slug: ID!) {
           name
           options
         }
+      }
+    }
+  }
+}
+`;
+
+export const GET_PRODUCT_REVIEWS = `
+query GetProductReviews($slug: ID!) {
+  product(id: $slug, idType: SLUG) {
+    ... on SimpleProduct {
+      reviews {
+        nodes {
+          id
+          rating
+          content
+          date
+          reviewer {
+            name
+            email
+          }
+        }
+      }
+    }
+  }
+}
+`;
+
+export const WRITE_REVIEW_MUTATION = `
+mutation WriteReview($input: WriteReviewInput!) {
+  writeReview(input: $input) {
+    rating
+    review {
+      id
+      rating
+      content
+      date
+      reviewer {
+        name
+        email
       }
     }
   }
@@ -101,6 +201,7 @@ export const GET_PRODUCT_CATEGORIES = `
       name
       slug
       count
+      parentId
       image {
         sourceUrl
       }
@@ -221,6 +322,7 @@ query GetBlogPostBySlug($slug: ID!) {
     title
     slug
     date
+    modified
     content
     featuredImage {
       node {
@@ -271,6 +373,13 @@ query GetShopProducts(
       featured
       image {
         sourceUrl
+        mediaItemUrl
+      }
+      featuredImage {
+        node {
+          sourceUrl
+          mediaItemUrl
+        }
       }
       productCategories {
         nodes {
@@ -301,6 +410,59 @@ query GetShopProducts(
   }
 }
 `;
+export const GET_SEARCH_SUGGESTIONS = `
+query GetSearchSuggestions($search: String!, $first: Int!) {
+  products(first: $first, where: { search: $search }) {
+    nodes {
+      databaseId
+      name
+      slug
+      image {
+        sourceUrl
+        mediaItemUrl
+      }
+      featuredImage {
+        node {
+          sourceUrl
+          mediaItemUrl
+        }
+      }
+      ... on SimpleProduct {
+        price
+        regularPrice
+        salePrice
+        onSale
+        stockStatus
+      }
+      productCategories {
+        nodes {
+          name
+          slug
+        }
+      }
+      productBrands {
+        nodes {
+          name
+          slug
+        }
+      }
+    }
+  }
+  productCategories(where: { search: $search, hideEmpty: true }, first: 4) {
+    nodes {
+      databaseId
+      name
+      slug
+      count
+      parentId
+      image {
+        sourceUrl
+      }
+    }
+  }
+}
+`;
+
 export const GET_PRODUCT_BRANDS = `
 {
   productBrands(first: 50) {

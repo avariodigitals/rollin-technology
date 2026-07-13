@@ -1,9 +1,17 @@
-// TARGET PATH IN REPO: src/app/procurement/schools/page.tsx (new)
+import type { Metadata } from "next";
 import { GraduationCap, Laptop, Wifi, LifeBuoy } from "lucide-react"
 
 import Container from "@/components/shared/Container"
 import { PrincipleCard } from "@/components/marketing/PrincipleCard"
 import { SchoolForm } from "@/components/marketing/SchoolForm"
+
+export const metadata: Metadata = {
+  title: "School Procurement",
+  description: "Education pricing, computer lab setups, and campus networking for schools and universities in Nigeria. Device fleets and term-time support.",
+  alternates: {
+    canonical: "/procurement/schools",
+  },
+};
 
 export default function SchoolProcurementPage() {
   return (

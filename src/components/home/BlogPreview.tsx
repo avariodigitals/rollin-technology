@@ -33,7 +33,7 @@ export default async function BlogPreview() {
       <Container>
         <div className="mb-8 flex items-end justify-between">
           <div>
-            <p className="text-xs font-semibold tracking-wide text-primary uppercase">Latest Insights</p>
+            <p className="text-sm font-semibold tracking-wide text-primary uppercase">Latest Insights</p>
             <h2 className="mt-2 font-heading text-3xl font-bold text-foreground">
               Guides, reviews and procurement know-how.
             </h2>
