@@ -211,7 +211,7 @@ export default function HeroSlider() {
         </div>
 
         {/* Controls */}
-        <div className="mt-8 flex items-center justify-between">
+        <div className="mt-8 flex items-center justify-center gap-2 sm:justify-between">
           <div className="flex items-center gap-2">
             {slides.map((_, index) => (
               <button
@@ -228,7 +228,7 @@ export default function HeroSlider() {
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="hidden items-center gap-2 sm:flex">
             <button
               type="button"
               onClick={prev}

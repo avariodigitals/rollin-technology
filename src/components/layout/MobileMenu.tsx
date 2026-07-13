@@ -89,25 +89,27 @@ export default function MobileMenu({ categories }: MobileMenuProps) {
   return (
     <>
       <div className="flex h-16 items-center justify-between border-b bg-white px-4">
-        <button
-          type="button"
-          aria-label="Open menu"
-          onClick={() => setOpen(true)}
-          className="flex size-9 items-center justify-center rounded-lg text-foreground"
-        >
-          <Menu className="size-5" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            aria-label="Open menu"
+            onClick={() => setOpen(true)}
+            className="flex size-9 items-center justify-center rounded-lg text-foreground"
+          >
+            <Menu className="size-5" />
+          </button>
 
-        <Link href="/" aria-label="Rollin Technologies home">
-          <Image
-            src="https://central.rollin.ng/wp-content/uploads/2026/07/thelogorollin.png"
-            alt="Rollin Technologies"
-            width={220}
-            height={64}
-            className="h-auto w-[130px] sm:w-[220px]"
-            priority
-          />
-        </Link>
+          <Link href="/" aria-label="Rollin Technologies home">
+            <Image
+              src="https://central.rollin.ng/wp-content/uploads/2026/07/thelogorollin.png"
+              alt="Rollin Technologies"
+              width={220}
+              height={64}
+              className="h-auto w-[130px] sm:w-[220px]"
+              priority
+            />
+          </Link>
+        </div>
 
         <div className="flex items-center gap-1">
           <button
