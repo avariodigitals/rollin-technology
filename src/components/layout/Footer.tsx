@@ -116,19 +116,6 @@ export default async function Footer() {
           </div>
 
           <div>
-            <h4 className="font-heading text-sm font-semibold uppercase tracking-wide text-foreground">Company</h4>
-            <ul className="mt-4 space-y-2.5 text-base text-muted-foreground">
-              {companyLinks.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="transition-colors hover:text-primary">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
             <h4 className="font-heading text-sm font-semibold uppercase tracking-wide text-foreground">Products</h4>
             <ul className="mt-4 space-y-2.5 text-base text-muted-foreground">
               {productLinks.length === 0 ? (
@@ -159,10 +146,10 @@ export default async function Footer() {
           </div>
 
           <div>
-            <h4 className="font-heading text-sm font-semibold uppercase tracking-wide text-foreground">Business</h4>
+            <h4 className="font-heading text-sm font-semibold uppercase tracking-wide text-foreground">Support</h4>
             <ul className="mt-4 space-y-2.5 text-base text-muted-foreground">
-              {businessLinks.map((link) => (
-                <li key={link.label}>
+              {supportLinks.map((link) => (
+                <li key={link.href}>
                   <Link href={link.href} className="transition-colors hover:text-primary">
                     {link.label}
                   </Link>
@@ -172,10 +159,23 @@ export default async function Footer() {
           </div>
 
           <div>
-            <h4 className="font-heading text-sm font-semibold uppercase tracking-wide text-foreground">Support</h4>
+            <h4 className="font-heading text-sm font-semibold uppercase tracking-wide text-foreground">Company</h4>
             <ul className="mt-4 space-y-2.5 text-base text-muted-foreground">
-              {supportLinks.map((link) => (
+              {companyLinks.map((link) => (
                 <li key={link.href}>
+                  <Link href={link.href} className="transition-colors hover:text-primary">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-heading text-sm font-semibold uppercase tracking-wide text-foreground">Business</h4>
+            <ul className="mt-4 space-y-2.5 text-base text-muted-foreground">
+              {businessLinks.map((link) => (
+                <li key={link.label}>
                   <Link href={link.href} className="transition-colors hover:text-primary">
                     {link.label}
                   </Link>

@@ -3,7 +3,7 @@ import Container from "@/components/shared/Container"
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs"
 import { ProductFilterSidebar } from "@/components/commerce/ProductFilterSidebar"
 import { SortSelect } from "@/components/commerce/SortSelect"
-import { ProductGrid } from "@/components/commerce/ProductGrid"
+import { InfiniteProductGrid } from "@/components/commerce/InfiniteProductGrid"
 import { fetchGraphQL } from "@/lib/graphql"
 import { GET_PRODUCT_CATEGORIES, GET_PRODUCT_BRANDS, GET_SHOP_PRODUCTS } from "@/lib/queries"
 import { mapProduct } from "@/lib/products/mapProduct"
@@ -96,40 +96,35 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             <SortSelect currentSort={params.sort} />
           </div>
 
-          <ProductGrid
-            products={products}
+          <InfiniteProductGrid
+            initialProducts={products}
+            initialPageInfo={pageInfo}
+            baseUrl={buildApiBaseUrl(params)}
             columns="4"
             emptyTitle="No products match these filters"
             emptyDescription="Try clearing a filter, a different search term, or a different category."
           />
-
-          {pageInfo?.hasNextPage && (
-            <div className="mt-8 flex justify-center">
-              <a
-                href={`/shop?${buildNextPageQuery(params, pageInfo.endCursor)}`}
-                className="rounded-lg border px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-muted"
-              >
-                Load more
-              </a>
-            </div>
-          )}
         </div>
       </div>
     </Container>
   )
 }
 
-function buildNextPageQuery(
-  params: { category?: string | string[]; brand?: string | string[]; price?: string; inStock?: string; sort?: string; search?: string },
-  after: string
+function buildApiBaseUrl(
+  params: { category?: string | string[]; brand?: string | string[]; price?: string; inStock?: string; search?: string }
 ) {
   const usp = new URLSearchParams()
+  usp.set("first", "16")
   toArray(params.category).forEach((c) => usp.append("category", c))
   toArray(params.brand).forEach((b) => usp.append("brand", b))
-  if (params.price) usp.set("price", params.price)
+  if (params.price) {
+    const bracket = PRICE_BRACKETS.find((b) => b.key === params.price)
+    if (bracket) {
+      if (bracket.min != null) usp.set("minPrice", bracket.min.toString())
+      if (bracket.max != null) usp.set("maxPrice", bracket.max.toString())
+    }
+  }
   if (params.inStock) usp.set("inStock", params.inStock)
-  if (params.sort) usp.set("sort", params.sort)
   if (params.search) usp.set("search", params.search)
-  usp.set("after", after)
-  return usp.toString()
+  return `/api/products?${usp.toString()}`
 }

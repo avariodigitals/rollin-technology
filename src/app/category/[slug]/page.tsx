@@ -5,7 +5,7 @@ import Container from "@/components/shared/Container"
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs"
 import { ProductFilterSidebar } from "@/components/commerce/ProductFilterSidebar"
 import { SortSelect } from "@/components/commerce/SortSelect"
-import { ProductGrid } from "@/components/commerce/ProductGrid"
+import { InfiniteProductGrid } from "@/components/commerce/InfiniteProductGrid"
 import { fetchGraphQL } from "@/lib/graphql"
 import { GET_PRODUCT_CATEGORIES, GET_PRODUCT_BRANDS, GET_SHOP_PRODUCTS } from "@/lib/queries"
 import { mapProduct } from "@/lib/products/mapProduct"
@@ -86,6 +86,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       first: PRODUCTS_PER_PAGE,
       after: sp.after ?? null,
       categoryIn: [slug],
+      productBrandIn: selectedBrands.length > 0 ? selectedBrands : null,
       minPrice: priceBracket?.min ?? null,
       maxPrice: priceBracket?.max ?? null,
       stockStatus: inStockOnly ? ["IN_STOCK"] : null,
@@ -102,13 +103,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
   const brands = brandsData?.productBrands?.nodes ?? []
 
-  // FIX (TS7006 — same root cause as ShopPage): explicit Product[] typing.
-  let products: Product[] = (productsData?.products?.nodes ?? []).map(mapProduct)
-
-  if (selectedBrands.length > 0) {
-    products = products.filter((p: Product) => p.brand && selectedBrands.includes(p.brand))
-  }
-
+  const products: Product[] = (productsData?.products?.nodes ?? []).map(mapProduct)
   const pageInfo = productsData?.products?.pageInfo
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
@@ -152,38 +147,35 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             <SortSelect currentSort={sp.sort} />
           </div>
 
-          <ProductGrid
-            products={products}
+          <InfiniteProductGrid
+            initialProducts={products}
+            initialPageInfo={pageInfo}
+            baseUrl={buildApiBaseUrl(slug, sp)}
             columns="4"
             emptyTitle="No products match these filters"
             emptyDescription="Try clearing a filter."
           />
-
-          {pageInfo?.hasNextPage && (
-            <div className="mt-8 flex justify-center">
-              <a
-                href={`/category/${slug}?${buildNextPageQuery(sp, pageInfo.endCursor)}`}
-                className="rounded-lg border px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-muted"
-              >
-                Load more
-              </a>
-            </div>
-          )}
         </div>
       </div>
     </Container>
   )
 }
 
-function buildNextPageQuery(
-  sp: { brand?: string | string[]; price?: string; inStock?: string; sort?: string },
-  after: string
+function buildApiBaseUrl(
+  slug: string,
+  sp: { brand?: string | string[]; price?: string; inStock?: string }
 ) {
   const usp = new URLSearchParams()
+  usp.set("first", "16")
+  usp.append("category", slug)
   toArray(sp.brand).forEach((b) => usp.append("brand", b))
-  if (sp.price) usp.set("price", sp.price)
+  if (sp.price) {
+    const bracket = PRICE_BRACKETS.find((b) => b.key === sp.price)
+    if (bracket) {
+      if (bracket.min != null) usp.set("minPrice", bracket.min.toString())
+      if (bracket.max != null) usp.set("maxPrice", bracket.max.toString())
+    }
+  }
   if (sp.inStock) usp.set("inStock", sp.inStock)
-  if (sp.sort) usp.set("sort", sp.sort)
-  usp.set("after", after)
-  return usp.toString()
+  return `/api/products?${usp.toString()}`
 }
