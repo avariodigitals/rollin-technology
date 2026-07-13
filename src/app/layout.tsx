@@ -77,6 +77,18 @@ export const metadata: Metadata = {
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION,
   },
+  icons: {
+    icon: {
+      url: "https://central.rollin.ng/wp-content/uploads/2026/07/favrollin.png",
+      type: "image/png",
+      sizes: "32x32",
+    },
+    apple: {
+      url: "https://central.rollin.ng/wp-content/uploads/2026/07/favrollin.png",
+      type: "image/png",
+      sizes: "180x180",
+    },
+  },
 };
 
 export default function RootLayout({
