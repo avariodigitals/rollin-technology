@@ -46,14 +46,14 @@ export function PromotionalBanner({
       <Container>
         <div
           className={cn(
-            "flex flex-col gap-8 lg:flex-row lg:items-center",
-            alignment === "center" ? "items-center lg:justify-center" : "items-start",
+            "flex flex-col items-center gap-8 lg:flex-row lg:items-center",
+            alignment === "center" ? "lg:justify-center" : "lg:items-start",
             alignment === "right" && "lg:flex-row-reverse"
           )}
         >
-          <div className={cn("max-w-xl", alignClass[alignment])}>
+          <div className={cn("max-w-xl text-center lg:text-left", alignment === "center" && "lg:text-center", alignment === "right" && "lg:text-right")}>
             {eyebrow && (
-              <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-primary">
+              <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-primary lg:text-left">
                 {eyebrow}
               </p>
             )}
@@ -73,7 +73,7 @@ export function PromotionalBanner({
             >
               {description}
             </p>
-            <div className={cn("mt-5 flex flex-wrap gap-3", alignment === "center" && "justify-center")}>
+            <div className={cn("mt-5 flex flex-wrap justify-center gap-3 lg:justify-start", alignment === "center" && "lg:justify-center", alignment === "right" && "lg:justify-end")}>
               <Link
                 href={primaryCta.href}
                 className={cn(

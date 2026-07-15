@@ -40,7 +40,7 @@ export default function HomePage() {
         description="Shop HP, Dell, Lenovo, and Apple laptops with warranty and flexible payment options."
         primaryCta={{ label: "Shop Laptops", href: "/category/laptops" }}
         theme="blue"
-        alignment="center"
+        alignment="left"
         campaignId="laptop-promo-1"
         desktopImage="https://central.rollin.ng/wp-content/uploads/2026/07/thelaptop.avif"
         mobileImage="https://central.rollin.ng/wp-content/uploads/2026/07/thelaptop.avif"
@@ -56,7 +56,7 @@ export default function HomePage() {
         description="Reduce downtime with reliable solar and backup power solutions. Professional installation available."
         primaryCta={{ label: "Explore Solar Products", href: "/category/solar-products" }}
         theme="green"
-        alignment="center"
+        alignment="left"
         campaignId="solar-promo-1"
         desktopImage="https://central.rollin.ng/wp-content/uploads/2026/07/solarinverterrollin.png"
         mobileImage="https://central.rollin.ng/wp-content/uploads/2026/07/solarinverterrollin.png"

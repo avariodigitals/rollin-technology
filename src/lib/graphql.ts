@@ -23,7 +23,7 @@ async function rawFetch(
   if (signal) {
     fetchOptions.signal = signal;
   } else {
-    (fetchOptions as any).next = { revalidate: authToken ? 0 : 60 };
+    (fetchOptions as any).next = { revalidate: 0 };
   }
 
   const response = await fetch(GRAPHQL_ENDPOINT, fetchOptions);
