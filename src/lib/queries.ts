@@ -48,7 +48,7 @@ export const GET_FEATURED_PRODUCTS = `
 
 export const GET_NEW_ARRIVALS = `
 {
-  products(first: 10, where: { orderby: { field: DATE, order: DESC } }) {
+  products(first: 12, where: { orderby: { field: DATE, order: DESC } }) {
     nodes {
       databaseId
       name
