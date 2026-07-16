@@ -9,7 +9,7 @@ import { mapProduct } from "@/lib/products/mapProduct";
 export default async function NewArrivals() {
   const data = await fetchGraphQL(GET_NEW_ARRIVALS);
 
-  const products = (data?.products?.nodes ?? []).map(mapProduct);
+  const products = (data?.products?.nodes ?? []).map(mapProduct).slice(0, 12);
 
   return (
     <section className="bg-muted/30 py-16">

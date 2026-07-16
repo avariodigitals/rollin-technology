@@ -1,10 +1,19 @@
 interface ProductSpecsTableProps {
   attributes: { name: string; options: string[] }[]
+  shortDescription?: string
 }
 
 
-export function ProductSpecsTable({ attributes }: ProductSpecsTableProps) {
+export function ProductSpecsTable({ attributes, shortDescription }: ProductSpecsTableProps) {
   if (attributes.length === 0) {
+    if (shortDescription) {
+      return (
+        <div
+          className="prose prose-sm max-w-none text-sm leading-relaxed text-muted-foreground [&_a]:text-primary [&_a]:underline"
+          dangerouslySetInnerHTML={{ __html: shortDescription }}
+        />
+      )
+    }
     return (
       <p className="text-sm text-muted-foreground">
         Detailed specifications for this product haven&apos;t been added yet.

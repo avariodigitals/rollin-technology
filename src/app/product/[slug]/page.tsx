@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { CheckCircle2 } from "lucide-react"
 
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs"
 import { ProductGallery } from "@/components/product/ProductGallery"
@@ -131,23 +130,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
 
           <p className="mt-1 text-xs text-muted-foreground">
-            VAT included · Pay in 3 instalments available at checkout
+            VAT included
           </p>
 
-          <ul className="mt-4 space-y-2 text-sm text-foreground">
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="size-4 text-primary" /> Genuine product with full manufacturer warranty
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="size-4 text-primary" /> Tested and inspected before dispatch
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="size-4 text-primary" /> Same-day delivery within Lagos · 2–5 days nationwide
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="size-4 text-primary" /> Pay on delivery available for verified addresses
-            </li>
-          </ul>
+          {(product.shortDescription || product.description) && (
+            <div
+              className="mt-4 prose prose-sm max-w-none text-sm leading-relaxed text-muted-foreground [&_a]:text-primary [&_a]:underline"
+              dangerouslySetInnerHTML={{ __html: product.shortDescription || product.description || "" }}
+            />
+          )}
 
           <div className="mt-6">
             <AddToCartBar product={product} disabled={product.stockStatus === "OUT_OF_STOCK"} />

@@ -18,7 +18,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
       </TabsList>
 
       <TabsContent value="specifications">
-        <ProductSpecsTable attributes={product.attributes ?? []} />
+        <ProductSpecsTable attributes={product.attributes ?? []} shortDescription={product.shortDescription || product.description} />
       </TabsContent>
 
       <TabsContent value="reviews">
