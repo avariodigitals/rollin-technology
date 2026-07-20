@@ -20,7 +20,12 @@ interface BlogPageProps {
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
   const { after } = await searchParams
-  const data = await fetchGraphQL(GET_BLOG_POSTS, { first: POSTS_PER_PAGE, after: after ?? null })
+  let data: any = null
+  try {
+    data = await fetchGraphQL(GET_BLOG_POSTS, { first: POSTS_PER_PAGE, after: after ?? null })
+  } catch {
+    data = null
+  }
 
   const posts = data?.posts?.nodes ?? []
   const pageInfo = data?.posts?.pageInfo

@@ -7,7 +7,8 @@ async function rawFetch(
   query: string,
   variables: Record<string, unknown>,
   authToken?: string | null,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  revalidate: number = 300
 ) {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (authToken) {
@@ -23,7 +24,7 @@ async function rawFetch(
   if (signal) {
     fetchOptions.signal = signal;
   } else {
-    (fetchOptions as any).next = { revalidate: 0 };
+    (fetchOptions as any).next = { revalidate };
   }
 
   const response = await fetch(GRAPHQL_ENDPOINT, fetchOptions);
@@ -48,9 +49,10 @@ export async function fetchGraphQL(
   query: string,
   variables: Record<string, unknown> = {},
   authToken?: string | null,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  revalidate: number = 300
 ) {
-  let json = await rawFetch(query, variables, authToken, signal);
+  let json = await rawFetch(query, variables, authToken, signal, revalidate);
 
   if (json.errors && authToken) {
     const { refreshToken, user } = useAuthStore.getState();

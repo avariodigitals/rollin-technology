@@ -23,7 +23,12 @@ interface ProductPageProps {
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params
-  const data = await fetchGraphQL(GET_PRODUCT_BY_SLUG, { slug })
+  let data: any = null
+  try {
+    data = await fetchGraphQL(GET_PRODUCT_BY_SLUG, { slug })
+  } catch {
+    return { title: "Product Not Found" }
+  }
 
   if (!data?.product) {
     return {
@@ -52,7 +57,12 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params
-  const data = await fetchGraphQL(GET_PRODUCT_BY_SLUG, { slug })
+  let data: any = null
+  try {
+    data = await fetchGraphQL(GET_PRODUCT_BY_SLUG, { slug })
+  } catch {
+    notFound()
+  }
 
   if (!data?.product) {
     notFound()
@@ -60,8 +70,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const product = mapProductDetail(data.product)
 
- 
-  const relatedData = await fetchGraphQL(GET_FEATURED_PRODUCTS)
+  let relatedData: any = null
+  try {
+    relatedData = await fetchGraphQL(GET_FEATURED_PRODUCTS)
+  } catch {
+    relatedData = null
+  }
   const relatedProducts = (relatedData?.products?.nodes ?? [])
     .map(mapProduct)
     .filter((p: Product) => p.slug !== product.slug)

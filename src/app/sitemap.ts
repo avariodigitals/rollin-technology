@@ -3,6 +3,8 @@ import { fetchGraphQL } from "@/lib/graphql";
 
 const BASE_URL = "https://rollin.ng";
 
+export const revalidate = 3600;
+
 const STATIC_PAGES = [
   { url: "/", priority: 1.0, changefreq: "daily" as const },
   { url: "/shop", priority: 0.9, changefreq: "daily" as const },
@@ -69,24 +71,32 @@ async function fetchAllProducts(): Promise<{ slug: string; modified?: string }[]
   let after: string | null = null;
   let hasNextPage = true;
 
-  while (hasNextPage) {
-    const data = await fetchGraphQL(ALL_PRODUCTS_QUERY, { first: 100, after });
-    const nodes = data?.products?.nodes ?? [];
-    const pageInfo = data?.products?.pageInfo;
+  try {
+    while (hasNextPage) {
+      const data = await fetchGraphQL(ALL_PRODUCTS_QUERY, { first: 100, after });
+      const nodes = data?.products?.nodes ?? [];
+      const pageInfo = data?.products?.pageInfo;
 
-    items.push(...nodes.map((n: { slug: string; modified?: string }) => ({ slug: n.slug, modified: n.modified })));
-    hasNextPage = pageInfo?.hasNextPage ?? false;
-    after = pageInfo?.endCursor ?? null;
+      items.push(...nodes.map((n: { slug: string; modified?: string }) => ({ slug: n.slug, modified: n.modified })));
+      hasNextPage = pageInfo?.hasNextPage ?? false;
+      after = pageInfo?.endCursor ?? null;
+    }
+  } catch {
+    // Return what we have so far
   }
 
   return items;
 }
 
 async function fetchAllCategories(): Promise<{ slug: string }[]> {
-  const data = await fetchGraphQL(ALL_CATEGORIES_QUERY);
-  return (data?.productCategories?.nodes ?? []).map((n: { slug: string }) => ({
-    slug: n.slug,
-  }));
+  try {
+    const data = await fetchGraphQL(ALL_CATEGORIES_QUERY);
+    return (data?.productCategories?.nodes ?? []).map((n: { slug: string }) => ({
+      slug: n.slug,
+    }));
+  } catch {
+    return [];
+  }
 }
 
 async function fetchAllBlogPosts(): Promise<{ slug: string; modified?: string }[]> {
@@ -94,14 +104,18 @@ async function fetchAllBlogPosts(): Promise<{ slug: string; modified?: string }[
   let after: string | null = null;
   let hasNextPage = true;
 
-  while (hasNextPage) {
-    const data = await fetchGraphQL(ALL_BLOG_POSTS_QUERY, { first: 100, after });
-    const nodes = data?.posts?.nodes ?? [];
-    const pageInfo = data?.posts?.pageInfo;
+  try {
+    while (hasNextPage) {
+      const data = await fetchGraphQL(ALL_BLOG_POSTS_QUERY, { first: 100, after });
+      const nodes = data?.posts?.nodes ?? [];
+      const pageInfo = data?.posts?.pageInfo;
 
-    items.push(...nodes.map((n: { slug: string; modified?: string }) => ({ slug: n.slug, modified: n.modified })));
-    hasNextPage = pageInfo?.hasNextPage ?? false;
-    after = pageInfo?.endCursor ?? null;
+      items.push(...nodes.map((n: { slug: string; modified?: string }) => ({ slug: n.slug, modified: n.modified })));
+      hasNextPage = pageInfo?.hasNextPage ?? false;
+      after = pageInfo?.endCursor ?? null;
+    }
+  } catch {
+    // Return what we have so far
   }
 
   return items;

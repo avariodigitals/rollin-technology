@@ -9,7 +9,7 @@ async function fetchProducts(variables: Record<string, unknown>) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query: GET_SHOP_PRODUCTS, variables }),
-    next: { revalidate: 0 },
+    next: { revalidate: 300 },
   })
 
   if (!res.ok) {

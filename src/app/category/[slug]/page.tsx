@@ -31,7 +31,12 @@ interface CategoryPageProps {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const categoriesData = await fetchGraphQL(GET_PRODUCT_CATEGORIES)
+  let categoriesData: any = null
+  try {
+    categoriesData = await fetchGraphQL(GET_PRODUCT_CATEGORIES)
+  } catch {
+    return { title: "Category" }
+  }
   const categoryMeta = ((categoriesData?.productCategories?.nodes ?? []) as ProductCategory[]).find(
     (c) => c.slug === slug
   )
@@ -81,7 +86,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const inStockOnly = sp.inStock === "1"
 
   const [categoriesData, brandsData, productsData] = await Promise.all([
-    fetchGraphQL(GET_PRODUCT_CATEGORIES),
+    fetchGraphQL(GET_PRODUCT_CATEGORIES).catch(() => null),
     fetchGraphQL(GET_PRODUCT_BRANDS).catch(() => null),
     fetchGraphQL(GET_SHOP_PRODUCTS, {
       first: PRODUCTS_PER_PAGE,
@@ -91,7 +96,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       minPrice: priceBracket?.min ?? null,
       maxPrice: priceBracket?.max ?? null,
       stockStatus: inStockOnly ? ["IN_STOCK"] : null,
-    }),
+    }).catch(() => null),
   ])
 
   const categoryMeta = ((categoriesData?.productCategories?.nodes ?? []) as ProductCategory[]).find(

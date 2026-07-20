@@ -47,7 +47,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const inStockOnly = params.inStock === "1"
 
   const [categoriesData, brandsData, productsData] = await Promise.all([
-    fetchGraphQL(GET_PRODUCT_CATEGORIES),
+    fetchGraphQL(GET_PRODUCT_CATEGORIES).catch(() => null),
     fetchGraphQL(GET_PRODUCT_BRANDS).catch(() => null),
     fetchGraphQL(GET_SHOP_PRODUCTS, {
       first: PRODUCTS_PER_PAGE,
@@ -58,7 +58,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       maxPrice: priceBracket?.max ?? null,
       stockStatus: inStockOnly ? ["IN_STOCK"] : null,
       search: params.search ?? null,
-    }),
+    }).catch(() => null),
   ])
 
   const categories = ((categoriesData?.productCategories?.nodes ?? []) as ProductCategory[]).filter(
