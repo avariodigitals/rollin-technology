@@ -18,11 +18,30 @@ interface BlogPageProps {
   searchParams: Promise<{ after?: string }>
 }
 
+interface BlogPostNode {
+  id: string
+  slug: string
+  title: string
+  excerpt?: string
+  categories?: { nodes: { name: string }[] }
+  featuredImage?: { node: { sourceUrl: string } }
+}
+
+interface GraphQLBlogResult {
+  posts?: {
+    nodes: BlogPostNode[]
+    pageInfo: {
+      hasNextPage: boolean
+      endCursor: string
+    }
+  }
+}
+
 export default async function BlogPage({ searchParams }: BlogPageProps) {
   const { after } = await searchParams
-  let data: any = null
+  let data: GraphQLBlogResult | null = null
   try {
-    data = await fetchGraphQL(GET_BLOG_POSTS, { first: POSTS_PER_PAGE, after: after ?? null })
+    data = await fetchGraphQL(GET_BLOG_POSTS, { first: POSTS_PER_PAGE, after: after ?? null }) as GraphQLBlogResult
   } catch {
     data = null
   }
@@ -46,7 +65,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           <p className="mt-10 text-center text-sm text-muted-foreground">No posts published yet.</p>
         ) : (
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post: { id: string; slug: string; title: string; excerpt?: string; categories?: { nodes: { name: string }[] }; featuredImage?: { node: { sourceUrl: string } } }) => (
+            {posts.map((post: BlogPostNode) => (
               <BlogCard
                 key={post.id}
                 slug={post.slug}

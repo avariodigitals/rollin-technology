@@ -24,11 +24,16 @@ interface Post {
   modified?: string
 }
 
+interface GraphQLPostResult {
+  post?: Post | null
+  errors?: { message: string }[]
+}
+
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params
-  let data: any = null
+  let data: GraphQLPostResult | null = null
   try {
-    data = await fetchGraphQL(GET_BLOG_POST_BY_SLUG, { slug })
+    data = await fetchGraphQL(GET_BLOG_POST_BY_SLUG, { slug }) as GraphQLPostResult
   } catch {
     data = null
   }
@@ -62,9 +67,9 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params
-  let data: any = null
+  let data: GraphQLPostResult | null = null
   try {
-    data = await fetchGraphQL(GET_BLOG_POST_BY_SLUG, { slug })
+    data = await fetchGraphQL(GET_BLOG_POST_BY_SLUG, { slug }) as GraphQLPostResult
   } catch {
     notFound()
   }

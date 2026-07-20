@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useCallback, useEffect } from "react"
+import { useState, useRef, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -117,7 +117,7 @@ function SearchDropdown({
                 className="object-cover"
               />
             ) : (
-              <Tag className="h-4 w-4 m-3 text-gray-400" />
+              <Tag className="h-4 w-4 text-gray-400 absolute inset-0 m-auto" />
             )}
           </div>
           <div className="flex-1 min-w-0">
@@ -168,7 +168,7 @@ function SearchDropdown({
       role="listbox"
       aria-label="Search suggestions"
     >
-      <div className="max-h-[400px] overflow-y-auto py-2">
+      <div className="max-h-96 overflow-y-auto py-2">
         {items.map((item) => item.element)}
       </div>
       <div className="border-t px-4 py-2.5">
@@ -268,14 +268,12 @@ export default function SearchBar({ categories }: SearchBarProps) {
     setActiveIndex(-1)
   }, [])
 
-  useEffect(() => {
-    setActiveIndex(-1)
-  }, [results])
+  const dropdownActiveIndex = activeIndex >= 0 ? activeIndex : -1
 
   return (
     <div className="bg-primary text-white">
       <Container>
-        <form onSubmit={handleSubmit} className="flex h-[56px] items-center justify-between gap-4">
+        <form onSubmit={handleSubmit} className="flex h-14 items-center justify-between gap-4">
           <CategoryMenu categories={categories} />
 
           <div className="relative flex flex-1 items-center">
@@ -289,6 +287,7 @@ export default function SearchBar({ categories }: SearchBarProps) {
                 value={query}
                 onChange={(e) => {
                   setQuery(e.target.value)
+                  setActiveIndex(-1)
                   setDropdownOpen(true)
                 }}
                 onFocus={() => {
@@ -312,7 +311,7 @@ export default function SearchBar({ categories }: SearchBarProps) {
                   <X className="h-3 w-3" />
                 </button>
               )}
-              <div className="h-4 w-[1px] bg-gray-200 hidden sm:block" />
+              <div className="h-4 w-px bg-gray-200 hidden sm:block" />
               <select className="text-xs text-gray-600 bg-transparent px-3 border-none outline-none cursor-pointer hidden sm:block font-semibold">
                 <option>All Categories</option>
               </select>
@@ -342,7 +341,7 @@ export default function SearchBar({ categories }: SearchBarProps) {
                     results={results}
                     loading={loading}
                     error={error}
-                    activeIndex={activeIndex}
+                    activeIndex={dropdownActiveIndex}
                     onSelect={handleSelect}
                   />
                 </div>
@@ -356,9 +355,9 @@ export default function SearchBar({ categories }: SearchBarProps) {
               className="flex items-center justify-center p-1.5 hover:opacity-80 relative"
               aria-label="Compare products"
             >
-              <RefreshCw className="h-[18px] w-[18px]" />
+              <RefreshCw className="h-4 w-4" />
               {compareItems.length > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-[#F5C400] text-gray-950 text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 bg-accent text-gray-950 text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                   {compareItems.length}
                 </span>
               )}
@@ -369,9 +368,9 @@ export default function SearchBar({ categories }: SearchBarProps) {
               className="flex items-center justify-center p-1.5 hover:opacity-80 relative"
               aria-label="Wishlist"
             >
-              <Heart className="h-[18px] w-[18px]" />
+              <Heart className="h-4 w-4" />
               {wishlistItems.length > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-[#F5C400] text-gray-950 text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 bg-accent text-gray-950 text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                   {wishlistItems.length}
                 </span>
               )}
@@ -383,9 +382,9 @@ export default function SearchBar({ categories }: SearchBarProps) {
               aria-label="Cart"
             >
               <div className="relative">
-                <ShoppingBag className="h-5 w-5 stroke-[2]" />
+                <ShoppingBag className="h-5 w-5 stroke-2" />
                 {cartCount > 0 && (
-                  <span className="absolute -bottom-1 -right-1.5 bg-[#F5C400] text-gray-950 text-[10px] font-extrabold rounded-full h-4 w-4 flex items-center justify-center border border-primary">
+                  <span className="absolute -bottom-1 -right-1.5 bg-accent text-gray-950 text-[10px] font-extrabold rounded-full h-4 w-4 flex items-center justify-center border border-primary">
                     {cartCount}
                   </span>
                 )}

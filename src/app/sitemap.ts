@@ -66,6 +66,32 @@ const ALL_BLOG_POSTS_QUERY = `
   }
 `;
 
+interface GraphQLSitemapProductsResult {
+  products?: {
+    nodes: Array<{ slug: string; modified?: string }>;
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
+  };
+}
+
+interface GraphQLSitemapCategoriesResult {
+  productCategories?: {
+    nodes: Array<{ slug: string }>;
+  };
+}
+
+interface GraphQLSitemapPostsResult {
+  posts?: {
+    nodes: Array<{ slug: string; modified?: string }>;
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
+  };
+}
+
 async function fetchAllProducts(): Promise<{ slug: string; modified?: string }[]> {
   const items: { slug: string; modified?: string }[] = [];
   let after: string | null = null;
@@ -73,7 +99,8 @@ async function fetchAllProducts(): Promise<{ slug: string; modified?: string }[]
 
   try {
     while (hasNextPage) {
-      const data = await fetchGraphQL(ALL_PRODUCTS_QUERY, { first: 100, after });
+      // Fixed using 'as' type assertion
+      const data = (await fetchGraphQL(ALL_PRODUCTS_QUERY, { first: 100, after })) as GraphQLSitemapProductsResult;
       const nodes = data?.products?.nodes ?? [];
       const pageInfo = data?.products?.pageInfo;
 
@@ -90,7 +117,8 @@ async function fetchAllProducts(): Promise<{ slug: string; modified?: string }[]
 
 async function fetchAllCategories(): Promise<{ slug: string }[]> {
   try {
-    const data = await fetchGraphQL(ALL_CATEGORIES_QUERY);
+    // Fixed using 'as' type assertion
+    const data = (await fetchGraphQL(ALL_CATEGORIES_QUERY)) as GraphQLSitemapCategoriesResult;
     return (data?.productCategories?.nodes ?? []).map((n: { slug: string }) => ({
       slug: n.slug,
     }));
@@ -106,7 +134,8 @@ async function fetchAllBlogPosts(): Promise<{ slug: string; modified?: string }[
 
   try {
     while (hasNextPage) {
-      const data = await fetchGraphQL(ALL_BLOG_POSTS_QUERY, { first: 100, after });
+      // Fixed using 'as' type assertion
+      const data = (await fetchGraphQL(ALL_BLOG_POSTS_QUERY, { first: 100, after })) as GraphQLSitemapPostsResult;
       const nodes = data?.posts?.nodes ?? [];
       const pageInfo = data?.posts?.pageInfo;
 
