@@ -1,3 +1,4 @@
+// src/components/layout/Footer.tsx
 import Link from "next/link"
 import Image from "next/image"
 import { Phone, Mail, MapPin } from "lucide-react"
@@ -5,8 +6,7 @@ import { FaFacebookF, FaInstagram, FaXTwitter, FaLinkedinIn } from "react-icons/
 
 import Container from "@/components/shared/Container"
 import { fetchGraphQL } from "@/lib/graphql"
-import { GET_PRODUCT_CATEGORIES } from "@/lib/queries"
-import type { ProductCategory } from "@/types/product"
+import { getCategories } from "@/lib/data/categories"
 
 interface FooterLink {
   label: string
@@ -51,8 +51,7 @@ const socials = [
 
 async function getPopulatedCategoryLinks(): Promise<FooterLink[]> {
   try {
-    const data = await fetchGraphQL(GET_PRODUCT_CATEGORIES)
-    const categories = (data?.productCategories?.nodes ?? []) as ProductCategory[]
+    const categories = await getCategories()
 
     return categories
       .filter((category) => (category.count ?? 0) > 0)
@@ -87,7 +86,15 @@ interface SolarSubcategory {
 
 async function getSolarSubcategories(): Promise<FooterLink[]> {
   try {
-    const data = await fetchGraphQL(GET_SOLAR_SUBCATEGORIES)
+    interface SolarSubcategoryResponse {
+  productCategory?: {
+    children?: {
+      nodes?: SolarSubcategory[]
+    }
+  }
+}
+
+const data = await fetchGraphQL<SolarSubcategoryResponse>(GET_SOLAR_SUBCATEGORIES)
     const children = (data?.productCategory?.children?.nodes ?? []) as SolarSubcategory[]
 
     return children

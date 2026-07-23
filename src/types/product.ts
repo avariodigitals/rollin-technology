@@ -82,3 +82,11 @@ export interface ProductCategory {
     sourceUrl: string;
   } | null;
 }
+
+
+export interface Brand {
+  id?: string;
+  name: string;
+  slug: string;
+  image?: string | null;
+}

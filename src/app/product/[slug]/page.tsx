@@ -1,3 +1,4 @@
+// src/app/product/[slug]/page.tsx
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
@@ -10,12 +11,9 @@ import { ProductGrid } from "@/components/commerce/ProductGrid"
 import { ProductBadge } from "@/components/shared/StatusBadge"
 import Container from "@/components/shared/Container"
 import JsonLd from "@/components/seo/JsonLd"
-import { fetchGraphQL } from "@/lib/graphql"
-import { GET_PRODUCT_BY_SLUG, GET_FEATURED_PRODUCTS } from "@/lib/queries"
-import { mapProductDetail } from "@/lib/products/mapProductDetail"
-import { mapProduct } from "@/lib/products/mapProduct"
-import { Product } from "@/types/product"
+import { getProductBySlug, getFeaturedProducts } from "@/lib/data/products"
 import { buildProductJsonLd, buildBreadcrumbJsonLd, BASE_URL } from "@/lib/seo"
+import type { Product } from "@/types/product"
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>
@@ -23,21 +21,14 @@ interface ProductPageProps {
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params
-  let data: any = null
-  try {
-    data = await fetchGraphQL(GET_PRODUCT_BY_SLUG, { slug })
-  } catch {
-    return { title: "Product Not Found" }
-  }
+  const product = await getProductBySlug(slug)
 
-  if (!data?.product) {
-    return {
-      title: "Product Not Found",
-    }
-  }
+  if (!product) return { title: "Product Not Found" }
 
-  const product = mapProductDetail(data.product)
-  const description = product.shortDescription || product.description || `Buy ${product.name} at Rollin Technology. Genuine product with warranty and nationwide delivery.`
+  const description =
+    product.shortDescription ||
+    product.description ||
+    `Buy ${product.name} at Rollin Technology.`
   const cleanDescription = description.replace(/<[^>]+>/g, "").slice(0, 160)
 
   return {
@@ -57,27 +48,15 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params
-  let data: any = null
-  try {
-    data = await fetchGraphQL(GET_PRODUCT_BY_SLUG, { slug })
-  } catch {
+  const product = await getProductBySlug(slug)
+
+  if (!product) {
     notFound()
   }
 
-  if (!data?.product) {
-    notFound()
-  }
-
-  const product = mapProductDetail(data.product)
-
-  let relatedData: any = null
-  try {
-    relatedData = await fetchGraphQL(GET_FEATURED_PRODUCTS)
-  } catch {
-    relatedData = null
-  }
-  const relatedProducts = (relatedData?.products?.nodes ?? [])
-    .map(mapProduct)
+  const featured = await getFeaturedProducts().catch(() => [])
+  // Explicitly type p as Product to resolve TS7006
+  const relatedProducts = featured
     .filter((p: Product) => p.slug !== product.slug)
     .slice(0, 4)
 
@@ -143,9 +122,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             )}
           </div>
 
-          <p className="mt-1 text-xs text-muted-foreground">
-            VAT included
-          </p>
+          <p className="mt-1 text-xs text-muted-foreground">VAT included</p>
 
           {(product.shortDescription || product.description) && (
             <div

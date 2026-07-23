@@ -1,4 +1,4 @@
-
+// components/content/BlogCard.tsx
 import Image from "next/image"
 import Link from "next/link"
 
@@ -12,14 +12,15 @@ interface BlogCardProps {
   readTime?: string
 }
 
-
-export function BlogCard({ slug,
+export function BlogCard({
+  slug,
   title,
   excerpt,
   date,
   image,
   category,
-  readTime,}: BlogCardProps) {
+  readTime,
+}: BlogCardProps) {
   const formattedDate = date
     ? new Date(date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
     : null
@@ -31,7 +32,14 @@ export function BlogCard({ slug,
     >
       <div className="relative h-44 w-full bg-gray-100">
         {image && (
-          <Image src={image} alt={title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
+          <Image
+            src={image}
+            alt={title}
+            fill
+            unoptimized // <-- Bypass Next.js proxying; force direct client fetch
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="object-cover"
+          />
         )}
       </div>
       <div className="p-4">
@@ -54,7 +62,10 @@ export function BlogCard({ slug,
         </h3>
 
         {excerpt && (
-          <p className="mt-2 line-clamp-2 text-sm text-muted-foreground" dangerouslySetInnerHTML={{ __html: excerpt }} />
+          <p
+            className="mt-2 line-clamp-2 text-sm text-muted-foreground"
+            dangerouslySetInnerHTML={{ __html: excerpt }}
+          />
         )}
       </div>
     </Link>

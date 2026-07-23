@@ -1,7 +1,7 @@
+// src/components/home/Categories.tsx
 import Container from "@/components/shared/Container";
 import CategoryCard from "@/components/commerce/CategoryCard";
-import { fetchGraphQL } from "@/lib/graphql";
-import { GET_PRODUCT_CATEGORIES } from "@/lib/queries";
+import { getCategories } from "@/lib/data/categories";
 import type { ProductCategory } from "@/types/product";
 
 const HOMEPAGE_CATEGORY_ORDER = [
@@ -25,45 +25,23 @@ function getCategoryOrderIndex(slug: string): number {
 }
 
 function isParentCategory(category: ProductCategory): boolean {
-  // WooGraphQL parentId: null means root category
-  // Some backends return 0 for root categories
   return category.parentId === null || category.parentId === 0 || category.parentId === undefined;
 }
 
 export default async function Categories() {
-  const data = await fetchGraphQL(GET_PRODUCT_CATEGORIES);
-
-  const categories =
-    (data?.productCategories?.nodes ??
-      []) as ProductCategory[];
+  const categories = await getCategories().catch(() => []);
 
   const cleanedCategories = Array.from(
-    categories.reduce(
-      (map, category) => {
-        const count = category.count ?? 0;
+    categories.reduce((map, category) => {
+      const count = category.count ?? 0;
+      if (count === 0 || !isParentCategory(category)) return map;
 
-        if (count === 0) {
-          return map;
-        }
-
-        // Only include parent categories on the homepage
-        if (!isParentCategory(category)) {
-          return map;
-        }
-
-        const existing = map.get(category.name);
-
-        if (
-          !existing ||
-          count > (existing.count ?? 0)
-        ) {
-          map.set(category.name, category);
-        }
-
-        return map;
-      },
-      new Map<string, ProductCategory>()
-    ).values()
+      const existing = map.get(category.name);
+      if (!existing || count > (existing.count ?? 0)) {
+        map.set(category.name, category);
+      }
+      return map;
+    }, new Map<string, ProductCategory>()).values()
   )
     .sort((a, b) => {
       const orderA = getCategoryOrderIndex(a.slug);
@@ -91,17 +69,15 @@ export default async function Categories() {
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {cleanedCategories.map(
-              (category) => (
-                <CategoryCard
-                  key={category.databaseId}
-                  name={category.name}
-                  slug={category.slug}
-                  count={category.count ?? 0}
-                  image={category.image?.sourceUrl ?? null}
-                />
-              )
-            )}
+            {cleanedCategories.map((category) => (
+              <CategoryCard
+                key={category.databaseId ?? category.slug}
+                name={category.name}
+                slug={category.slug}
+                count={category.count ?? 0}
+                image={typeof category.image === "string" ? category.image : category.image?.sourceUrl ?? null}
+              />
+            ))}
           </div>
         )}
       </Container>

@@ -36,7 +36,18 @@ async function rawFetch(
     (fetchOptions as { next?: { revalidate: number } }).next = { revalidate };
   }
 
+  // --- START TIMING MEASUREMENT ---
+  const start = Date.now();
+
   const response = await fetch(GRAPHQL_ENDPOINT, fetchOptions);
+
+  // Extract query name if present (e.g. "query GetFeaturedProducts"), or fallback to string snippet
+  const queryName =
+    query.match(/(?:query|mutation)\s+(\w+)/)?.[1] ||
+    query.trim().slice(0, 30).replace(/\s+/g, " ");
+
+  console.log(`⏱️  [GraphQL] ${queryName} ---> ${Date.now() - start}ms`);
+  // --- END TIMING MEASUREMENT ---
 
   const text = await response.text();
 
@@ -46,9 +57,9 @@ async function rawFetch(
 
   try {
     return JSON.parse(text);
-  } catch (error) {
+  } catch (_error) {
     console.error(
-      `GraphQL Parsing Failure (Status ${response.status}): Expected JSON but received HTML/Text. Snippet:`, 
+      `GraphQL Parsing Failure (Status ${response.status}): Expected JSON but received HTML/Text. Snippet:`,
       text.slice(0, 500)
     );
     throw new Error(`Upstream GraphQL server returned an invalid non-JSON response (${response.status}).`);

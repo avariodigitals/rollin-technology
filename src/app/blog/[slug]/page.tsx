@@ -1,3 +1,6 @@
+export const revalidate = 3600;
+
+import { cache } from "react"
 import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
@@ -29,15 +32,46 @@ interface GraphQLPostResult {
   errors?: { message: string }[]
 }
 
+interface GraphQLPostSlugsResult {
+  posts?: {
+    nodes: { slug: string }[]
+  }
+}
+
+// 1. Memoize fetch call so generateMetadata and BlogPostPage share 1 GraphQL request
+const getPostBySlug = cache(async (slug: string): Promise<Post | null> => {
+  try {
+    const data = (await fetchGraphQL(GET_BLOG_POST_BY_SLUG, { slug })) as GraphQLPostResult
+    return data?.post ?? null
+  } catch {
+    return null
+  }
+})
+
+// 2. Pre-generate static params at build time for ISR
+export async function generateStaticParams() {
+  try {
+    const data = (await fetchGraphQL(`
+      query GetBlogSlugs {
+        posts(first: 100) {
+          nodes {
+            slug
+          }
+        }
+      }
+    `)) as GraphQLPostSlugsResult
+
+    return (data?.posts?.nodes ?? []).map((post) => ({
+      slug: post.slug,
+    }))
+  } catch {
+    return []
+  }
+}
+
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params
-  let data: GraphQLPostResult | null = null
-  try {
-    data = await fetchGraphQL(GET_BLOG_POST_BY_SLUG, { slug }) as GraphQLPostResult
-  } catch {
-    data = null
-  }
-  const post: Post | null = data?.post ?? null
+  const post = await getPostBySlug(slug)
 
   if (!post) {
     return {
@@ -67,13 +101,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params
-  let data: GraphQLPostResult | null = null
-  try {
-    data = await fetchGraphQL(GET_BLOG_POST_BY_SLUG, { slug }) as GraphQLPostResult
-  } catch {
-    notFound()
-  }
-  const post: Post | null = data?.post ?? null
+  const post = await getPostBySlug(slug)
 
   if (!post) return notFound()
 
@@ -127,6 +155,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               sizes="(max-width: 1024px) 100vw, 1024px"
               className="object-cover"
               priority
+              unoptimized
             />
           </div>
         )}

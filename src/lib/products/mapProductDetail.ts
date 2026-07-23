@@ -12,15 +12,16 @@ interface RawProductReviewNode {
   } | null
 }
 
-interface RawProductDetailNode extends RawProductNode {
-  description?: string | null
-  shortDescription?: string | null
-  averageRating?: number | null
-  reviewCount?: number | null
-  stockStatus?: string | null
-  attributes?: { nodes: { name: string; options: string[] }[] } | null
-  galleryImages?: { nodes: { sourceUrl?: string | null; mediaItemUrl?: string | null }[] } | null
-  reviews?: { nodes: RawProductReviewNode[] } | null
+export interface RawProductDetailNode extends RawProductNode {
+  description?: string | null;
+  shortDescription?: string | null;
+  attributes?: { nodes: { name: string; options: string[] }[] } | null;
+  averageRating?: number | null;
+  reviewCount?: number | null;
+  // Make stockStatus match RawProductNode's strict union type:
+  stockStatus?: "IN_STOCK" | "OUT_OF_STOCK" | "ON_BACKORDER" | null;
+  galleryImages?: { nodes: { sourceUrl: string }[] } | null;
+  reviews?: { nodes: RawProductReviewNode[] } | null;
 }
 
 function mapReview(node: RawProductReviewNode): ProductReview | null {

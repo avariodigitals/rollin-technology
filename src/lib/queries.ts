@@ -1,6 +1,5 @@
-
 export const GET_FEATURED_PRODUCTS = `
-{
+query GetFeaturedProducts {
   products(first: 8) {
     nodes {
       databaseId
@@ -47,7 +46,7 @@ export const GET_FEATURED_PRODUCTS = `
 `;
 
 export const GET_NEW_ARRIVALS = `
-{
+query GetNewArrivals {
   products(first: 24, where: { orderby: { field: DATE, order: DESC } }) {
     nodes {
       databaseId
@@ -194,7 +193,7 @@ mutation WriteReview($input: WriteReviewInput!) {
 `;
 
 export const GET_PRODUCT_CATEGORIES = `
-{
+query GetProductCategories {
   productCategories(first: 100) {
     nodes {
       databaseId
@@ -210,7 +209,6 @@ export const GET_PRODUCT_CATEGORIES = `
 }
 `;
 
-
 export const LOGIN_MUTATION = `
 mutation Login($username: String!, $password: String!) {
   login(input: { username: $username, password: $password }) {
@@ -225,7 +223,6 @@ mutation Login($username: String!, $password: String!) {
   }
 }
 `;
- 
 
 export const REGISTER_CUSTOMER_MUTATION = `
 mutation RegisterCustomer($email: String!, $password: String!, $firstName: String!, $lastName: String!) {
@@ -241,10 +238,9 @@ mutation RegisterCustomer($email: String!, $password: String!, $firstName: Strin
   }
 }
 `;
- 
 
 export const GET_CUSTOMER_STATS = `
-{
+query GetCustomerStats {
   customer {
     id
     orderCount
@@ -252,8 +248,9 @@ export const GET_CUSTOMER_STATS = `
   }
 }
 `;
- export const GET_CUSTOMER_ADDRESSES = `
-{
+
+export const GET_CUSTOMER_ADDRESSES = `
+query GetCustomerAddresses {
   customer {
     id
     billing { address1 city state phone }
@@ -262,9 +259,8 @@ export const GET_CUSTOMER_STATS = `
 }
 `;
 
-
 export const GET_CUSTOMER_ORDERS = `
-{
+query GetCustomerOrders {
   customer {
     orders(first: 20) {
       nodes {
@@ -354,12 +350,12 @@ query GetShopProducts(
     first: $first
     after: $after
     where: {
-     categoryIn: $categoryIn
-  productBrandIn: $productBrandIn
-  minPrice: $minPrice
-  maxPrice: $maxPrice
-  stockStatus: $stockStatus
-  search: $search
+      categoryIn: $categoryIn
+      productBrandIn: $productBrandIn
+      minPrice: $minPrice
+      maxPrice: $maxPrice
+      stockStatus: $stockStatus
+      search: $search
     }
   ) {
     pageInfo {
@@ -410,6 +406,7 @@ query GetShopProducts(
   }
 }
 `;
+
 export const GET_SEARCH_SUGGESTIONS = `
 query GetSearchSuggestions($search: String!, $first: Int!) {
   products(first: $first, where: { search: $search }) {
@@ -464,7 +461,7 @@ query GetSearchSuggestions($search: String!, $first: Int!) {
 `;
 
 export const GET_PRODUCT_BRANDS = `
-{
+query GetProductBrands {
   productBrands(first: 50) {
     nodes {
       name
