@@ -5,13 +5,7 @@ import { Phone, Mail, MapPin } from "lucide-react"
 import { FaFacebookF, FaInstagram, FaXTwitter, FaLinkedinIn } from "react-icons/fa6"
 
 import Container from "@/components/shared/Container"
-import { fetchGraphQL } from "@/lib/graphql"
-import { getCategories } from "@/lib/data/categories"
-
-interface FooterLink {
-  label: string
-  href: string
-}
+import { getPopulatedCategoryLinks, getSolarSubcategories, type FooterLink } from "@/lib/data/categories"
 
 const companyLinks: FooterLink[] = [
   { label: "About Us", href: "/about" },
@@ -49,62 +43,6 @@ const socials = [
   { icon: FaLinkedinIn, href: "https://linkedin.com/company/rollin-ng", label: "LinkedIn" },
 ]
 
-async function getPopulatedCategoryLinks(): Promise<FooterLink[]> {
-  try {
-    const categories = await getCategories()
-
-    return categories
-      .filter((category) => (category.count ?? 0) > 0)
-      .filter((category) => !category.parentId)
-      .sort((a, b) => (b.count ?? 0) - (a.count ?? 0))
-      .slice(0, 6)
-      .map((category) => ({ label: category.name, href: `/category/${category.slug}` }))
-  } catch {
-    return []
-  }
-}
-
-const GET_SOLAR_SUBCATEGORIES = `
-query GetSolarSubcategories {
-  productCategory(id: "solar-inverters", idType: SLUG) {
-    children {
-      nodes {
-        name
-        slug
-        count
-      }
-    }
-  }
-}
-`
-
-interface SolarSubcategory {
-  name: string
-  slug: string
-  count: number | null
-}
-
-async function getSolarSubcategories(): Promise<FooterLink[]> {
-  try {
-    interface SolarSubcategoryResponse {
-  productCategory?: {
-    children?: {
-      nodes?: SolarSubcategory[]
-    }
-  }
-}
-
-const data = await fetchGraphQL<SolarSubcategoryResponse>(GET_SOLAR_SUBCATEGORIES)
-    const children = (data?.productCategory?.children?.nodes ?? []) as SolarSubcategory[]
-
-    return children
-      .filter((child) => (child.count ?? 0) > 0 || child.count === null)
-      .map((child) => ({ label: child.name, href: `/category/${child.slug}` }))
-  } catch {
-    return []
-  }
-}
-
 export default async function Footer() {
   const productLinks = await getPopulatedCategoryLinks()
   const solarLinks = await getSolarSubcategories()
@@ -132,18 +70,21 @@ export default async function Footer() {
               </li>
             </ul>
             <div className="mt-4 flex items-center gap-3">
-              {socials.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={social.label}
-                  className="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground transition hover:bg-primary/90"
-                >
-                  <social.icon className="size-4" />
-                </a>
-              ))}
+              {socials.map((social) => {
+                const Icon = social.icon
+                return (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                    className="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground transition hover:bg-primary/90"
+                  >
+                    <Icon className="size-4" />
+                  </a>
+                )
+              })}
             </div>
           </div>
 

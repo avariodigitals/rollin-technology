@@ -17,7 +17,7 @@ async function rawFetch(
   variables: Record<string, unknown>,
   authToken?: string | null,
   signal?: AbortSignal,
-  revalidate: number = 300
+  revalidate: number | false = 300
 ): Promise<GraphQLRawResult> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (authToken) {
@@ -32,22 +32,22 @@ async function rawFetch(
 
   if (signal) {
     fetchOptions.signal = signal;
+  } else if (revalidate === false) {
+    (fetchOptions as { cache?: RequestCache }).cache = "no-store";
   } else {
     (fetchOptions as { next?: { revalidate: number } }).next = { revalidate };
   }
 
-  // --- START TIMING MEASUREMENT ---
   const start = Date.now();
 
   const response = await fetch(GRAPHQL_ENDPOINT, fetchOptions);
 
-  // Extract query name if present (e.g. "query GetFeaturedProducts"), or fallback to string snippet
-  const queryName =
-    query.match(/(?:query|mutation)\s+(\w+)/)?.[1] ||
-    query.trim().slice(0, 30).replace(/\s+/g, " ");
-
-  console.log(`⏱️  [GraphQL] ${queryName} ---> ${Date.now() - start}ms`);
-  // --- END TIMING MEASUREMENT ---
+  if (process.env.NODE_ENV !== "production") {
+    const queryName =
+      query.match(/(?:query|mutation)\s+(\w+)/)?.[1] ||
+      query.trim().slice(0, 30).replace(/\s+/g, " ");
+    console.log(`⏱️  [GraphQL] ${queryName} ---> ${Date.now() - start}ms`);
+  }
 
   const text = await response.text();
 
@@ -80,7 +80,7 @@ export async function fetchGraphQL<T = any>(
   variables: Record<string, unknown> = {},
   authToken?: string | null,
   signal?: AbortSignal,
-  revalidate: number = 300
+  revalidate: number | false = 300
 ): Promise<T> {
   let json = await rawFetch(query, variables, authToken, signal, revalidate);
 

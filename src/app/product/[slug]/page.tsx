@@ -1,4 +1,6 @@
 // src/app/product/[slug]/page.tsx
+export const revalidate = 3600
+
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
@@ -12,11 +14,52 @@ import { ProductBadge } from "@/components/shared/StatusBadge"
 import Container from "@/components/shared/Container"
 import JsonLd from "@/components/seo/JsonLd"
 import { getProductBySlug, getFeaturedProducts } from "@/lib/data/products"
+import { fetchGraphQL } from "@/lib/graphql"
 import { buildProductJsonLd, buildBreadcrumbJsonLd, BASE_URL } from "@/lib/seo"
 import type { Product } from "@/types/product"
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>
+}
+
+interface GraphQLProductSlugsResult {
+  products?: {
+    nodes: { slug: string }[]
+  }
+}
+
+// Pre-generates static pages for all products at build time so product
+// views are served from cache/ISR instead of a full dynamic SSR render
+// on every request. Revalidates hourly (see `revalidate` export above).
+export async function generateStaticParams() {
+  try {
+    const data = (await fetchGraphQL(`
+      query GetProductSlugs {
+        products(first: 1000) {
+          nodes {
+            slug
+          }
+        }
+      }
+    `)) as GraphQLProductSlugsResult
+
+    return (data?.products?.nodes ?? [])
+      .filter((product) => !product.slug.includes("%"))
+      // WooCommerce occasionally stores a literal percent-encoded slug
+      // (e.g. a "″" inch-mark character that failed transliteration,
+      // producing a slug like "6-52%e2%80%b3-..."). These can't
+      // round-trip through URL encoding correctly and would otherwise
+      // fail the build. Skipped here so they simply 404 if requested
+      // directly — fix at the source by renaming the product's
+      // permalink slug in WooCommerce admin (see chat for how).
+      .map((product) => ({
+        slug: product.slug,
+      }))
+  } catch {
+    // Build should not fail if the CMS is briefly unavailable — pages
+    // will simply be generated on-demand instead (ISR fallback).
+    return []
+  }
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
@@ -55,7 +98,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   const featured = await getFeaturedProducts().catch(() => [])
-  // Explicitly type p as Product to resolve TS7006
   const relatedProducts = featured
     .filter((p: Product) => p.slug !== product.slug)
     .slice(0, 4)

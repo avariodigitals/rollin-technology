@@ -4,12 +4,16 @@ import { mapProduct } from "@/lib/products/mapProduct"
 
 const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_WORDPRESS_API!
 
+interface GraphQLErrorItem {
+  message: string
+}
+
 async function fetchProducts(variables: Record<string, unknown>) {
   const res = await fetch(GRAPHQL_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query: GET_SHOP_PRODUCTS, variables }),
-    next: { revalidate: 300 },
+    cache: "no-store",
   })
 
   if (!res.ok) {
@@ -19,7 +23,7 @@ async function fetchProducts(variables: Record<string, unknown>) {
   const json = await res.json()
 
   if (json.errors) {
-    const messages = json.errors.map((e: any) => e.message).join("; ")
+    const messages = json.errors.map((e: GraphQLErrorItem) => e.message).join("; ")
     console.warn("GraphQL errors:", messages)
     if (!json.data) {
       throw new Error(`GraphQL query failed: ${messages}`)
@@ -61,7 +65,10 @@ export async function GET(request: NextRequest) {
     const products = (data?.products?.nodes ?? []).map(mapProduct)
     const pageInfo = data?.products?.pageInfo
 
-    return NextResponse.json({ products, pageInfo })
+    return NextResponse.json(
+      { products, pageInfo },
+      { headers: { "Cache-Control": "no-store" } }
+    )
   } catch (error) {
     console.error("API products error:", error)
     return NextResponse.json(

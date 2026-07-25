@@ -6,18 +6,11 @@ import { MobileFilterDrawer } from "@/components/commerce/MobileFilterDrawer"
 import { SortSelect } from "@/components/commerce/SortSelect"
 import { InfiniteProductGrid } from "@/components/commerce/InfiniteProductGrid"
 import { fetchGraphQL } from "@/lib/graphql"
-import { GET_PRODUCT_CATEGORIES, GET_PRODUCT_BRANDS, GET_SHOP_PRODUCTS } from "@/lib/queries"
+import { GET_PRODUCT_BRANDS, GET_SHOP_PRODUCTS } from "@/lib/queries"
+import { getCategories } from "@/lib/data/categories"
 import { mapProduct } from "@/lib/products/mapProduct"
 import { PRICE_BRACKETS } from "@/lib/priceBrackets"
-import type { Product, ProductCategory } from "@/types/product"
-
-export const metadata: Metadata = {
-  title: "Shop",
-  description: "Browse genuine laptops, phones, solar products, networking gear, and accessories. Filter by brand, price, and availability. Nationwide delivery.",
-  alternates: {
-    canonical: "/shop",
-  },
-};
+import type { Product } from "@/types/product"
 
 const PRODUCTS_PER_PAGE = 16
 
@@ -38,6 +31,22 @@ function toArray(value?: string | string[]): string[] {
   return Array.isArray(value) ? value : [value]
 }
 
+export async function generateMetadata({ searchParams }: ShopPageProps): Promise<Metadata> {
+  const params = await searchParams
+  const hasFilters = !!(params.category || params.brand || params.price || params.inStock || params.search)
+
+  return {
+    title: "Shop",
+    description: "Browse genuine laptops, phones, solar products, networking gear, and accessories. Filter by brand, price, and availability. Nationwide delivery.",
+    alternates: {
+      canonical: "/shop",
+    },
+    // The clean /shop URL is indexable; every filtered/searched variant
+    // is near-infinite in combination and adds no unique indexable
+    // content, so keep those out of search engine crawl scheduling.
+    robots: hasFilters ? { index: false, follow: true } : undefined,
+  };
+}
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
   const params = await searchParams
@@ -46,24 +55,29 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const priceBracket = PRICE_BRACKETS.find((b) => b.key === params.price)
   const inStockOnly = params.inStock === "1"
 
-  const [categoriesData, brandsData, productsData] = await Promise.all([
-    fetchGraphQL(GET_PRODUCT_CATEGORIES).catch(() => null),
+  const [rawCategories, brandsData, productsData] = await Promise.all([
+    getCategories().catch(() => []),
     fetchGraphQL(GET_PRODUCT_BRANDS).catch(() => null),
-    fetchGraphQL(GET_SHOP_PRODUCTS, {
-      first: PRODUCTS_PER_PAGE,
-      after: params.after ?? null,
-      categoryIn: selectedCategories.length > 0 ? selectedCategories : null,
-      productBrandIn: selectedBrands.length > 0 ? selectedBrands : null,
-      minPrice: priceBracket?.min ?? null,
-      maxPrice: priceBracket?.max ?? null,
-      stockStatus: inStockOnly ? ["IN_STOCK"] : null,
-      search: params.search ?? null,
-    }).catch(() => null),
+    fetchGraphQL(
+      GET_SHOP_PRODUCTS,
+      {
+        first: PRODUCTS_PER_PAGE,
+        after: params.after ?? null,
+        categoryIn: selectedCategories.length > 0 ? selectedCategories : null,
+        productBrandIn: selectedBrands.length > 0 ? selectedBrands : null,
+        minPrice: priceBracket?.min ?? null,
+        maxPrice: priceBracket?.max ?? null,
+        stockStatus: inStockOnly ? ["IN_STOCK"] : null,
+        search: params.search ?? null,
+      },
+      undefined,
+      undefined,
+      // Filtered/searched/paginated result set — skip the Data Cache.
+      false
+    ).catch(() => null),
   ])
 
-  const categories = ((categoriesData?.productCategories?.nodes ?? []) as ProductCategory[]).filter(
-    (c) => (c.count ?? 0) > 0
-  )
+  const categories = rawCategories.filter((c) => (c.count ?? 0) > 0)
   const brands = brandsData?.productBrands?.nodes ?? []
   const products: Product[] = (productsData?.products?.nodes ?? []).map(mapProduct)
   const pageInfo = productsData?.products?.pageInfo

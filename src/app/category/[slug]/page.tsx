@@ -1,4 +1,4 @@
-export const revalidate = 3600; 
+export const revalidate = 3600;
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
@@ -9,10 +9,11 @@ import { MobileFilterDrawer } from "@/components/commerce/MobileFilterDrawer"
 import { SortSelect } from "@/components/commerce/SortSelect"
 import { InfiniteProductGrid } from "@/components/commerce/InfiniteProductGrid"
 import { fetchGraphQL } from "@/lib/graphql"
-import { GET_PRODUCT_CATEGORIES, GET_PRODUCT_BRANDS, GET_SHOP_PRODUCTS } from "@/lib/queries"
+import { GET_PRODUCT_BRANDS, GET_SHOP_PRODUCTS } from "@/lib/queries"
+import { getCategories } from "@/lib/data/categories"
 import { mapProduct } from "@/lib/products/mapProduct"
 import { PRICE_BRACKETS } from "@/lib/priceBrackets"
-import type { Product, ProductCategory } from "@/types/product"
+import type { Product } from "@/types/product"
 import { BASE_URL } from "@/lib/seo"
 import JsonLd from "@/components/seo/JsonLd"
 import { buildBreadcrumbJsonLd } from "@/lib/seo"
@@ -28,12 +29,6 @@ interface CategoryPageProps {
     sort?: string
     after?: string
   }>
-}
-
-interface GraphQLCategoriesResult {
-  productCategories?: {
-    nodes: ProductCategory[]
-  }
 }
 
 interface GraphQLBrandsResult {
@@ -52,23 +47,47 @@ interface GraphQLProductsResult {
   }
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params
-  let categoriesData: GraphQLCategoriesResult | null = null
+// Pre-generates the static shell for every category at build time.
+export async function generateStaticParams() {
   try {
-    categoriesData = await fetchGraphQL(GET_PRODUCT_CATEGORIES) as GraphQLCategoriesResult
+    const categories = await getCategories()
+    return categories
+      .filter((c) => (c.count ?? 0) > 0)
+      .map((c) => ({ slug: c.slug }))
+  } catch {
+    return []
+  }
+}
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ brand?: string | string[]; price?: string; inStock?: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const sp = await searchParams
+
+  let categories: Awaited<ReturnType<typeof getCategories>> = []
+  try {
+    categories = await getCategories()
   } catch {
     return { title: "Category" }
   }
-  const categoryMeta = ((categoriesData?.productCategories?.nodes ?? []) as ProductCategory[]).find(
-    (c) => c.slug === slug
-  )
+
+  const categoryMeta = categories.find((c) => c.slug === slug)
 
   if (!categoryMeta) {
     return {
       title: "Category Not Found",
     }
   }
+
+  // Filtered variants are near-infinite in combination and offer no
+  // unique content over the clean category URL — keep them out of the
+  // index so crawlers stop re-fetching every permutation on a schedule.
+  const hasFilters = !!(sp.brand || sp.price || sp.inStock)
 
   return {
     title: categoryMeta.name,
@@ -81,12 +100,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     alternates: {
       canonical: `/category/${slug}`,
     },
+    robots: hasFilters ? { index: false, follow: true } : undefined,
   }
-}
-
-function toArray(value?: string | string[]): string[] {
-  if (!value) return []
-  return Array.isArray(value) ? value : [value]
 }
 
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
@@ -97,23 +112,29 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const priceBracket = PRICE_BRACKETS.find((b) => b.key === sp.price)
   const inStockOnly = sp.inStock === "1"
 
-  const [categoriesData, brandsData, productsData] = await Promise.all([
-    fetchGraphQL(GET_PRODUCT_CATEGORIES).catch(() => null) as Promise<GraphQLCategoriesResult | null>,
+  const [categories, brandsData, productsData] = await Promise.all([
+    getCategories().catch(() => []),
     fetchGraphQL(GET_PRODUCT_BRANDS).catch(() => null) as Promise<GraphQLBrandsResult | null>,
-    fetchGraphQL(GET_SHOP_PRODUCTS, {
-      first: PRODUCTS_PER_PAGE,
-      after: sp.after ?? null,
-      categoryIn: [slug],
-      productBrandIn: selectedBrands.length > 0 ? selectedBrands : null,
-      minPrice: priceBracket?.min ?? null,
-      maxPrice: priceBracket?.max ?? null,
-      stockStatus: inStockOnly ? ["IN_STOCK"] : null,
-    }).catch(() => null) as Promise<GraphQLProductsResult | null>,
+    fetchGraphQL(
+      GET_SHOP_PRODUCTS,
+      {
+        first: PRODUCTS_PER_PAGE,
+        after: sp.after ?? null,
+        categoryIn: [slug],
+        productBrandIn: selectedBrands.length > 0 ? selectedBrands : null,
+        minPrice: priceBracket?.min ?? null,
+        maxPrice: priceBracket?.max ?? null,
+        stockStatus: inStockOnly ? ["IN_STOCK"] : null,
+      },
+      undefined,
+      undefined,
+      // Filtered/paginated result set — don't let this write to the
+      // Data Cache; see /lib/graphql.ts and /api/products/route.ts.
+      false
+    ).catch(() => null) as Promise<GraphQLProductsResult | null>,
   ])
 
-  const categoryMeta = ((categoriesData?.productCategories?.nodes ?? []) as ProductCategory[]).find(
-    (c) => c.slug === slug
-  )
+  const categoryMeta = categories.find((c) => c.slug === slug)
 
   if (!categoryMeta) {
     notFound()
@@ -121,12 +142,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
   const brands = brandsData?.productBrands?.nodes ?? []
   const rawNodes = (productsData?.products?.nodes ?? []) as Record<string, unknown>[]
-  
-  // FIXED HERE: Safely extract type requirements directly from mapProduct's signature
-  const products: Product[] = rawNodes.map((node) => 
+
+  const products: Product[] = rawNodes.map((node) =>
     mapProduct(node as unknown as Parameters<typeof mapProduct>[0])
   )
-  
+
   const pageInfo = productsData?.products?.pageInfo ?? null
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
@@ -199,6 +219,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       </div>
     </Container>
   )
+}
+
+function toArray(value?: string | string[]): string[] {
+  if (!value) return []
+  return Array.isArray(value) ? value : [value]
 }
 
 function buildApiBaseUrl(
